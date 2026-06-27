@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>공룡 게임</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #87CEEB;
+    }
+    #game {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      overflow: hidden;
+    }
+    #score-area {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: white;
+      font-size: 24px;
+    }
+    #sky {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: calc(100% - 50px);
+      background-color: lightblue;
+    }
+    .cloud {
+      width: 60px;
+      height: 30px;
+      background-color: white;
+      border-radius: 30px;
+      position: absolute;
+    }
+    .star {
+      width: 10px;
+      height: 10px;
+      background-color: yellow;
+      border-radius: 50%;
+      position: absolute;
+    }
+    #dino {
+      position: absolute;
+      left: 20px;
+      bottom: 50px;
+      width: 50px;
+      height: 40px;
+      background-color: green;
+      clip-path: polygon(0% 100%, 10% 90%, 20% 100%, 30% 80%, 40% 100%, 50% 75%, 50% 60%, 52% 50%, 54% 60%, 54% 75%, 60% 100%, 100% 100%, 100% 40%, 90% 30%, 80% 10%, 60% 0%, 40% 10%, 20% 0%, 0% 40%); /* 간단한 브라키오사우루스 형태 */
+    }
+    .cactus {
+      position: absolute;
+      bottom: 50px;
+      width: 15px;
+      height: 50px;
+      background-color: brown;
+    }
+    #ground {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      background-color: #964B00;
+    }
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 30px;
+      z-index: 10;
+      visibility: hidden;
+    }
+    .msg-start {
+      visibility: visible; /* 게임 시작 메시지 보이기 */
+    }
+    .msg-gameover {
+      visibility: hidden; /* 게임 오버 메시지 숨기기 */
+    }
+    .dino-gameover {
+      visibility: hidden; /* 게임오버 상태에서 공룡 숨기기 */
+    }
+  </style>
+</head>
+<body data-state="idle">
+  <div id="game">
+    <div id="score-area">
+      <span id="hi-score">HI 00000</span>
+      <span id="score">00000</span>
+    </div>
+
+    <div id="sky">
+      <div class="cloud" style="left:10%;top:30px"></div>
+      <div class="cloud" style="left:40%;top:50px"></div>
+      <div class="cloud" style="left:70%;top:20px"></div>
+      <div class="star" style="left:8%;top:40px"></div>
+      <div class="star" style="left:20%;top:25px"></div>
+      <div class="star" style="left:35%;top:55px"></div>
+      <div class="star" style="left:50%;top:35px"></div>
+      <div class="star" style="left:63%;top:20px"></div>
+      <div class="star" style="left:75%;top:50px"></div>
+      <div class="star" style="left:85%;top:30px"></div>
+      <div class="star" style="left:93%;top:45px"></div>
+    </div>
+
+    <div id="dino"></div>
+
+    <div id="ground">
+      <div class="ground-strip" id="ground-strip-a"></div>
+      <div class="ground-strip" id="ground-strip-b"></div>
+    </div>
+
+    <div id="obstacles"></div>
+
+    <div class="overlay msg-start">
+      <p>Space / ↑ 키로 시작</p>
+    </div>
+    <div class="overlay msg-gameover">
+      <p class="gameover-text">GAME OVER</p>
+      <p class="restart-text">Space / ↑ 키로 재시작</p>
+    </div>
+  </div>
+
+  <script>
+    let score = 0;
+    let hiScore = 0;
+    let gameOver = false;
+    let cactusInterval;
+
+    document.addEventListener('keydown', function(event) {
+      if (event.code === 'Space' || event.code === 'ArrowUp') {
+        // 게임 시작 또는 재시작
+        if (gameOver) {
+          restartGame();
+        } else {
+          startGame();
+        }
+      }
+    });
+
+    function startGame() {
+      gameOver = false;
+      score = 0;
+      document.getElementById('dino').classList.remove('dino-gameover');
+      document.querySelector('.msg-gameover').style.visibility = 'hidden';
+      document.querySelector('.msg-start').style.visibility = 'hidden';
+      score = 0;
+
+      // 장애물 생성
+      cactusInterval = setInterval(createCactus, 2000);
+      requestAnimationFrame(gameLoop);
+    }
+
+    function gameLoop() {
+      if (!gameOver) {
+        increaseScore();
+        requestAnimationFrame(gameLoop);
+      }
+    }
+
+    function gameOverScreen() {
+      gameOver = true;
+      clearInterval(cactusInterval);
+      document.getElementById('dino').classList.add('dino-gameover');
+      document.querySelector('.msg-gameover').style.visibility = 'visible';
+    }
+
+    function restartGame() {
+      score = 0;
+      startGame(); // 게임 재시작
+    }
+
+    function increaseScore() {
+      if (!gameOver) {
+        score += 1;
+        document.getElementById('score').innerText = score.toString().padStart(5, '0');
+        if (score > hiScore) {
+          hiScore = score;
+          document.getElementById('hi-score').innerText = 'HI ' + hiScore.toString().padStart(5, '0');
+        }
+      }
+    }
+
+    function createCactus() {
+      const cactus = document.createElement('div');
+      cactus.classList.add('cactus');
+      cactus.style.left = '100%';
+      cactus.style.bottom = '50px';
+      document.getElementById('obstacles').appendChild(cactus);
+
+      moveCactus(cactus);
+    }
+
+    function moveCactus(cactus) {
+      let position = 100; // 초기 위치
+      const interval = setInterval(() => {
+        if (position < -15) {
+          clearInterval(interval);
+          cactus.remove(); // 화면 바깥으로 나가면 삭제
+        } else {
+          position -= 5; // 이동 속도
+          cactus.style.left = position + '%';
+
+          // 충돌 감지
+          if (position < 45 && position > 30) { // 적절한 충돌 거리 조정
+            gameOverScreen();
+            clearInterval(interval);
+          }
+        }
+      }, 20);
+    }
+
+    // 낮과 밤 스위치 로직 추가
+    setInterval(function() {
+      // 여기에 낮과 밤 전환 코드 추가
+    }, 30000); // 30초 간격으로 전환
+  </script>
+</body>
+</html>
