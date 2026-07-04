@@ -2,8 +2,8 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>크롬 스타일 브라키오 게임 - 밸런스 및 프테라 업그레이드</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>크롬 스타일 브라키오 게임 - 모바일 터치 지원</title>
     <style>
         /* 기본 스타일 및 낮/밤 테마 */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
@@ -11,8 +11,8 @@
         :root { --bg-color: #f7f7f7; --main-color: #535353; --sub-color: #747474; }
         body.night-mode { --bg-color: #202124; --main-color: #e8eaed; --sub-color: #9aa0a6; }
 
-        body { background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; user-select: none; transition: background-color 0.3s ease; }
-        #game { position: relative; width: 600px; height: 150px; background-color: var(--bg-color); overflow: hidden; border-bottom: 2px solid var(--main-color); transition: background-color 0.3s ease, border-color 0.3s ease; }
+        body { background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; user-select: none; transition: background-color 0.3s ease; -webkit-touch-callout: none; }
+        #game { position: relative; width: 600px; height: 150px; background-color: var(--bg-color); overflow: hidden; border-bottom: 2px solid var(--main-color); transition: background-color 0.3s ease, border-color 0.3s ease; touch-action: none; }
 
         /* 점수 영역 */
         #score-area { position: absolute; top: 10px; right: 10px; color: var(--main-color); font-size: 18px; font-weight: bold; z-index: 10; }
@@ -37,12 +37,10 @@
         /* 장애물 구조 */
         .obstacle { position: absolute; background: transparent; z-index: 4; }
         .cactus { bottom: 2px; width: 4px; height: 4px; box-shadow: 8px -24px 0 var(--main-color), 8px -20px 0 var(--main-color), 0px -16px 0 var(--main-color), 8px -16px 0 var(--main-color), 16px -16px 0 var(--main-color), 0px -12px 0 var(--main-color), 8px -12px 0 var(--main-color), 16px -12px 0 var(--main-color), 0px -8px 0 var(--main-color), 8px -8px 0 var(--main-color), 8px -4px 0 var(--main-color), 8px 0px 0 var(--main-color); }
-        
-        /* [수정 4] 부리와 날개가 강조된 정통 프테라노돈 스타일 도트 리디자인 */
         .ptera { width: 4px; height: 4px; box-shadow: 4px 0px 0 var(--main-color), 8px 0px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 0px 4px 0 var(--main-color), 4px 4px 0 var(--main-color), 8px 4px 0 var(--main-color), 12px 4px 0 var(--main-color), 16px 4px 0 var(--main-color), 20px 4px 0 var(--main-color), 24px 4px 0 var(--main-color), 4px 8px 0 var(--main-color), 8px 8px 0 var(--main-color), 12px 8px 0 var(--main-color), 12px 12px 0 var(--main-color), 12px 16px 0 var(--main-color); }
 
         /* 안내 문구 오버레이 */
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--main-color); font-size: 16px; font-weight: bold; background-color: var(--bg-color); z-index: 20; text-align: center; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--main-color); font-size: 16px; font-weight: bold; background-color: var(--bg-color); z-index: 20; text-align: center; padding: 10px; }
         .msg-gameover { display: none; }
         .gameover-text { font-size: 24px; letter-spacing: 5px; margin-bottom: 10px; }
         .restart-text { font-size: 14px; color: var(--sub-color); }
@@ -59,16 +57,18 @@
     <div id="dino" class="stand-a"></div>
     <div id="obstacles"></div>
     <div class="overlay msg-start" id="msg-start">
-        <p>Space / ↑: 점프, ↓: 숙이기</p>
-        <p style="font-size: 12px; margin-top: 5px; color: #747474;">(시작하려면 Space 또는 ↑ 키 입력)</p>
+        <p>📱 모바일: 왼쪽터치(숙이기) / 오른쪽터치(점프)</p>
+        <p style="font-size: 12px; margin-top: 5px; color: #747474;">⌨️ PC: ↑(점프) / ↓(숙이기)</p>
+        <p style="font-size: 13px; margin-top: 10px; color: var(--main-color); background: rgba(0,0,0,0.05); padding: 5px 10px; border-radius: 4px;">[ 화면을 터치하면 시작합니다 ]</p>
     </div>
     <div class="overlay msg-gameover" id="msg-gameover">
         <p class="gameover-text">GAME OVER</p>
-        <p class="restart-text">Space / ↑ 키로 재시작</p>
+        <p class="restart-text">화면을 터치하면 재시작</p>
     </div>
 </div>
 
 <script>
+    const gameContainer = document.getElementById('game');
     const body = document.body;
     const dino = document.getElementById('dino');
     const scoreDisplay = document.getElementById('score');
@@ -97,10 +97,44 @@
     const cloudSpeed = 1; 
     let nextSpawnDistance = 300; 
 
-    // 애니메이션 프레임 제어 타이머
     let animTimer = 0;
     let currentFrame = 'a';
 
+    // --- 1. [신규 추가] 모바일 터치 이벤트 핸들러 ---
+    gameContainer.addEventListener('touchstart', function(e) {
+        e.preventDefault(); // 스크롤 및 확대 오작동 방지
+
+        if (!isPlaying) {
+            startGame();
+            return;
+        }
+
+        // 터치한 지점의 X 좌표값 계산
+        const touchX = e.touches[0].clientX - gameContainer.getBoundingClientRect().left;
+        const gameWidth = gameContainer.clientWidth;
+
+        if (touchX > gameWidth / 2) {
+            // [오른쪽 절반 터치] -> 점프
+            if (!isJumping && !isDucking) {
+                isJumping = true;
+                jumpVelocity = 10;
+            }
+        } else {
+            // [왼쪽 절반 터치] -> 고개 숙이기
+            if (!isJumping) {
+                isDucking = true;
+            }
+        }
+    }, { passive: false });
+
+    gameContainer.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        // 터치가 끝나면 숙이기 상태 해제
+        isDucking = false;
+    }, { passive: false });
+
+
+    // --- 2. 기존 키보드 이벤트 핸들러 (PC 플레이 유저용 유지) ---
     window.addEventListener('keydown', function(e) {
         if (!isPlaying) {
             if (e.code === 'Space' || e.code === 'ArrowUp') {
@@ -151,7 +185,6 @@
         msgGameover.style.display = 'none';
         scoreDisplay.innerText = '00000';
 
-        // 점수 타이머 (0.05초마다 1씩 상승)
         clearInterval(scoreInterval);
         scoreInterval = setInterval(() => {
             if (!isPlaying) return;
@@ -167,7 +200,6 @@
         gameLoopInterval = setInterval(updateGame, 1000 / 60);
     }
 
-    // [수정 1] 밤낮 교체 시 속도가 2가 아닌 0.5씩 정밀하게 가속
     function toggleNightMode() {
         isNight = !isNight;
         if (isNight) body.classList.add('night-mode');
@@ -178,7 +210,6 @@
     function updateGame() {
         if (!isPlaying) return;
 
-        // 점프 연산
         if (isJumping) {
             dinoY += jumpVelocity;
             jumpVelocity -= gravity; 
@@ -191,14 +222,12 @@
         }
         dino.style.bottom = (2 + dinoY) + 'px';
 
-        // 다리 교차 애니메이션 주기 제어
         animTimer++;
         if (animTimer > 8) { 
             currentFrame = (currentFrame === 'a') ? 'b' : 'a';
             animTimer = 0;
         }
 
-        // 상태별 클래스 동적 리렌더링
         dino.className = ''; 
         if (isJumping) {
             dino.classList.add('stand-a'); 
@@ -208,7 +237,6 @@
             dino.classList.add(currentFrame === 'a' ? 'stand-a' : 'stand-b'); 
         }
 
-        // 구름 제어
         if (Math.random() < 0.005) createCloud();
         for (let i = clouds.length - 1; i >= 0; i--) {
             let cloud = clouds[i];
@@ -217,7 +245,6 @@
             if (cloud.x < -40) { cloud.el.remove(); clouds.splice(i, 1); }
         }
 
-        // 장애물 계측 알고리즘
         let lastObstacleX = 0;
         if (obstacles.length > 0) {
             lastObstacleX = obstacles[obstacles.length - 1].x;
@@ -231,20 +258,18 @@
                 createCactus(count);
             }
 
-            // [수정 2] 기본 간격을 공룡 폭(44px)의 3~6배로 유지하되, 밤(isNight)이 되면 보정치를 더 주어 간격을 증가시킴
             const dinoWidth = 44;
-            let minDistance = dinoWidth * 3; // 기본 3배 = 132px
-            let maxDistance = dinoWidth * 6; // 기본 6배 = 264px
+            let minDistance = dinoWidth * 3; 
+            let maxDistance = dinoWidth * 6; 
             
             if (isNight) {
-                minDistance += 40; // [수정 2] 밤이 되면 선인장 최소 간격 확장
-                maxDistance += 70; // [수정 2] 밤이 되면 선인장 최대 간격 확장
+                minDistance += 40; 
+                maxDistance += 70; 
             }
             
             nextSpawnDistance = Math.random() * (maxDistance - minDistance) + minDistance + (obstacleSpeed * 6);
         }
 
-        // 장애물 이동 및 충돌
         for (let i = obstacles.length - 1; i >= 0; i--) {
             let obs = obstacles[i];
             obs.x -= obstacleSpeed;
@@ -252,7 +277,6 @@
 
             if (obs.x < -60) { obs.el.remove(); obstacles.splice(i, 1); continue; }
 
-            // 히트박스 연산
             let dinoLeft = 40 + (isDucking ? 4 : 12);
             let dinoRight = 40 + (isDucking ? 40 : 32);
             let dinoBottom = dinoY;
@@ -289,18 +313,13 @@
         }
     }
 
-    // [수정 3] 프테라노돈의 고도를 위로 더 높게 조정
     function createPtera() {
         const obsEl = document.createElement('div');
         obsEl.classList.add('obstacle', 'ptera');
         obsEl.style.left = '600px';
-        
-        // [수정 3] 기존 28px에서 38px로 비행 높이 대폭 상향
         const flyHeight = 38; 
         obsEl.style.bottom = flyHeight + 'px';
         obstaclesContainer.appendChild(obsEl);
-        
-        // 정교화된 프테라 전용 박스 히트 판정 등록
         obstacles.push({ el: obsEl, x: 600, hitbox: { left: 0, right: 28, bottom: flyHeight, top: flyHeight + 16 } });
     }
 
