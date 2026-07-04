@@ -3,176 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>크롬 스타일 브라키오 게임 - 데이&나이트</title>
+    <title>크롬 스타일 브라키오 게임 - 달리기 애니메이션</title>
     <style>
-        /* 기본 흑백 및 픽셀 스타일 세팅 */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Courier New', Courier, monospace;
-        }
+        /* 기본 스타일 및 픽셀 아트 정의 */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
 
-        /* [수정 4] 밤/낮 모드를 위한 CSS 변수 정의 */
-        :root {
-            --bg-color: #f7f7f7;   /* 낮 배경 */
-            --main-color: #535353; /* 낮 오브젝트 색 (진한 회색) */
-            --sub-color: #747474;  /* 낮 보조 색 */
-        }
+        :root { --bg-color: #f7f7f7; --main-color: #535353; --sub-color: #747474; }
+        body.night-mode { --bg-color: #202124; --main-color: #e8eaed; --sub-color: #9aa0a6; }
 
-        /* 밤 모드 클래스 */
-        body.night-mode {
-            --bg-color: #202124;   /* 밤 배경 (다크 그레이) */
-            --main-color: #e8eaed; /* 밤 오브젝트 색 (연한 회색) */
-            --sub-color: #9aa0a6;  /* 밤 보조 색 */
-        }
-
-        body {
-            background-color: var(--bg-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            user-select: none;
-            transition: background-color 0.3s ease; /* 낮밤 전환 부드럽게 */
-        }
-
-        #game {
-            position: relative;
-            width: 600px;
-            height: 150px;
-            background-color: var(--bg-color);
-            overflow: hidden;
-            border-bottom: 2px solid var(--main-color); /* 지면선 */
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
+        body { background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; user-select: none; transition: background-color 0.3s ease; }
+        #game { position: relative; width: 600px; height: 150px; background-color: var(--bg-color); overflow: hidden; border-bottom: 2px solid var(--main-color); transition: background-color 0.3s ease, border-color 0.3s ease; }
 
         /* 점수 영역 */
-        #score-area {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: var(--main-color);
-            font-size: 18px;
-            font-weight: bold;
-            z-index: 10;
-        }
-        #hi-score {
-            margin-right: 15px;
-            color: var(--sub-color);
-        }
+        #score-area { position: absolute; top: 10px; right: 10px; color: var(--main-color); font-size: 18px; font-weight: bold; z-index: 10; }
+        #hi-score { margin-right: 15px; color: var(--sub-color); }
 
-        /* [수정 2] 픽셀 구름 디자인 및 애니메이션 */
-        .cloud {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: transparent;
-            /* 픽셀 구름 아트 */
-            box-shadow:
-                12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color),
-                4px 4px 0 var(--main-color), 8px 4px 0 var(--main-color), 12px 4px 0 var(--main-color), 16px 4px 0 var(--main-color), 20px 4px 0 var(--main-color), 24px 4px 0 var(--main-color), 28px 4px 0 var(--main-color),
-                0px 8px 0 var(--main-color), 4px 8px 0 var(--main-color), 8px 8px 0 var(--main-color), 12px 8px 0 var(--main-color), 16px 8px 0 var(--main-color), 20px 8px 0 var(--main-color), 24px 8px 0 var(--main-color),
-                8px 12px 0 var(--main-color), 12px 12px 0 var(--main-color);
-            opacity: 0.6; /* 약간 투명하게 */
-        }
+        /* 배경 구름 */
+        .cloud { position: absolute; width: 4px; height: 4px; background: transparent; box-shadow: 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 4px 4px 0 var(--main-color), 8px 4px 0 var(--main-color), 12px 4px 0 var(--main-color), 16px 4px 0 var(--main-color), 20px 4px 0 var(--main-color), 24px 4px 0 var(--main-color), 28px 4px 0 var(--main-color), 0px 8px 0 var(--main-color), 4px 8px 0 var(--main-color), 8px 8px 0 var(--main-color), 12px 8px 0 var(--main-color), 16px 8px 0 var(--main-color), 20px 8px 0 var(--main-color), 24px 8px 0 var(--main-color), 8px 12px 0 var(--main-color), 12px 12px 0 var(--main-color); opacity: 0.6; z-index: 1; }
 
-        /* [수정 1] 브라키오사우르스 위치 조정 (bottom: 2px) */
-        #dino {
-            position: absolute;
-            left: 40px;
-            bottom: 2px; /* 발이 바닥 선 위에 딱 붙도록 수정 */
-            width: 4px;
-            height: 4px;
-            background: transparent;
-            /* 브라키오사우르스 픽셀 아트 */
-            box-shadow: 
-                36px -32px 0 var(--main-color), 40px -32px 0 var(--main-color), 44px -32px 0 var(--main-color),
-                36px -28px 0 var(--main-color), 40px -28px 0 var(--main-color),
-                36px -24px 0 var(--main-color),
-                36px -20px 0 var(--main-color),
-                32px -16px 0 var(--main-color), 36px -16px 0 var(--main-color),
-                28px -12px 0 var(--main-color), 32px -12px 0 var(--main-color),
-                12px -8px 0 var(--main-color), 16px -8px 0 var(--main-color), 20px -8px 0 var(--main-color), 24px -8px 0 var(--main-color), 28px -8px 0 var(--main-color),
-                8px -4px 0 var(--main-color), 12px -4px 0 var(--main-color), 16px -4px 0 var(--main-color), 20px -4px 0 var(--main-color), 24px -4px 0 var(--main-color), 28px -4px 0 var(--main-color),
-                4px 0px 0 var(--main-color), 8px 0px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 24px 0px 0 var(--main-color),
-                8px 4px 0 var(--main-color), 24px 4px 0 var(--main-color);
-            transition: bottom 0s;
-            z-index: 5;
-        }
+        /* 공룡 공통 베이스 (몸통, 목, 머리 공통 픽셀) */
+        #dino { position: absolute; left: 40px; bottom: 2px; width: 4px; height: 4px; background: transparent; transition: bottom 0s; z-index: 5; }
 
-        /* 장애물 (픽셀 선인장) */
-        .obstacle {
-            position: absolute;
-            bottom: 2px; /* 선인장도 바닥 위에 위치 */
-            width: 4px;
-            height: 4px;
-            background: transparent;
-            box-shadow:
-                8px -24px 0 var(--main-color),
-                8px -20px 0 var(--main-color),
-                0px -16px 0 var(--main-color), 8px -16px 0 var(--main-color), 16px -16px 0 var(--main-color),
-                0px -12px 0 var(--main-color), 8px -12px 0 var(--main-color), 16px -12px 0 var(--main-color),
-                0px -8px 0 var(--main-color), 8px -8px 0 var(--main-color),
-                8px -4px 0 var(--main-color),
-                8px 0px 0 var(--main-color);
-            z-index: 4;
-        }
+        /* --- [수정사항] 공룡 다리 구동 애니메이션 픽셀 아트 --- */
+        
+        /* 1. 서 있을 때 (기본형 - 양발 다 있음) */
+        #dino.stand { box-shadow: 36px -32px 0 var(--main-color), 40px -32px 0 var(--main-color), 44px -32px 0 var(--main-color), 36px -28px 0 var(--main-color), 40px -28px 0 var(--main-color), 36px -24px 0 var(--main-color), 36px -20px 0 var(--main-color), 32px -16px 0 var(--main-color), 36px -16px 0 var(--main-color), 28px -12px 0 var(--main-color), 32px -12px 0 var(--main-color), 12px -8px 0 var(--main-color), 16px -8px 0 var(--main-color), 20px -8px 0 var(--main-color), 24px -8px 0 var(--main-color), 28px -8px 0 var(--main-color), 8px -4px 0 var(--main-color), 12px -4px 0 var(--main-color), 16px -4px 0 var(--main-color), 20px -4px 0 var(--main-color), 24px -4px 0 var(--main-color), 28px -4px 0 var(--main-color), 4px 0px 0 var(--main-color), 8px 0px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 24px 0px 0 var(--main-color), 8px 4px 0 var(--main-color), 24px 4px 0 var(--main-color); }
 
-        /* 안내 문구 오버레이 */
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: var(--main-color);
-            font-size: 16px;
-            font-weight: bold;
-            /* 배경색과 동일한 불투명 배경 */
-            background-color: var(--bg-color); 
-            z-index: 20;
-        }
+        /* 2. 달리기 프레임 A (왼발만 바닥에 딛고 오른발은 들려있음) */
+        #dino.run-a { box-shadow: 36px -32px 0 var(--main-color), 40px -32px 0 var(--main-color), 44px -32px 0 var(--main-color), 36px -28px 0 var(--main-color), 40px -28px 0 var(--main-color), 36px -24px 0 var(--main-color), 36px -20px 0 var(--main-color), 32px -16px 0 var(--main-color), 36px -16px 0 var(--main-color), 28px -12px 0 var(--main-color), 32px -12px 0 var(--main-color), 12px -8px 0 var(--main-color), 16px -8px 0 var(--main-color), 20px -8px 0 var(--main-color), 24px -8px 0 var(--main-color), 28px -8px 0 var(--main-color), 8px -4px 0 var(--main-color), 12px -4px 0 var(--main-color), 16px -4px 0 var(--main-color), 20px -4px 0 var(--main-color), 24px -4px 0 var(--main-color), 28px -4px 0 var(--main-color), 4px 0px 0 var(--main-color), 8px 0px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 24px 0px 0 var(--main-color), 8px 4px 0 var(--main-color); }
 
-        .msg-gameover {
-            display: none;
-        }
+        /* 3. 달리기 프레임 B (오른발만 바닥에 딛고 왼발은 들려있음) */
+        #dino.run-b { box-shadow: 36px -32px 0 var(--main-color), 40px -32px 0 var(--main-color), 44px -32px 0 var(--main-color), 36px -28px 0 var(--main-color), 40px -28px 0 var(--main-color), 36px -24px 0 var(--main-color), 36px -20px 0 var(--main-color), 32px -16px 0 var(--main-color), 36px -16px 0 var(--main-color), 28px -12px 0 var(--main-color), 32px -12px 0 var(--main-color), 12px -8px 0 var(--main-color), 16px -8px 0 var(--main-color), 20px -8px 0 var(--main-color), 24px -8px 0 var(--main-color), 28px -8px 0 var(--main-color), 8px -4px 0 var(--main-color), 12px -4px 0 var(--main-color), 16px -4px 0 var(--main-color), 20px -4px 0 var(--main-color), 24px -4px 0 var(--main-color), 28px -4px 0 var(--main-color), 4px 0px 0 var(--main-color), 8px 0px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 24px 0px 0 var(--main-color), 24px 4px 0 var(--main-color); }
 
-        .gameover-text {
-            font-size: 24px;
-            letter-spacing: 5px;
-            margin-bottom: 10px;
-        }
+        /* 4. 숙이기 프레임 A (몸을 낮추고 왼발 딛기) */
+        #dino.duck-a { box-shadow: 12px -8px 0 var(--main-color), 16px -8px 0 var(--main-color), 20px -8px 0 var(--main-color), 24px -8px 0 var(--main-color), 28px -8px 0 var(--main-color), 32px -8px 0 var(--main-color), 36px -8px 0 var(--main-color), 40px -8px 0 var(--main-color), 8px -4px 0 var(--main-color), 12px -4px 0 var(--main-color), 16px -4px 0 var(--main-color), 20px -4px 0 var(--main-color), 24px -4px 0 var(--main-color), 28px -4px 0 var(--main-color), 32px -4px 0 var(--main-color), 4px 0px 0 var(--main-color), 8px 0px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 24px 0px 0 var(--main-color), 28px 0px 0 var(--main-color), 8px 4px 0 var(--main-color); }
 
-        .restart-text {
-            font-size: 14px;
-            color: var(--sub-color);
-        }
+        /* 5. 숙이기 프레임 B (몸을 낮추고 오른발 딛기) */
+        #dino.duck-b { box-shadow: 12px -8px 0 var(--main-color), 16px -8px 0 var(--main-color), 20px -8px 0 var(--main-color), 24px -8px 0 var(--main-color), 28px -8px 0 var(--main-color), 32px -8px 0 var(--main-color), 36px -8px 0 var(--main-color), 40px -8px 0 var(--main-color), 8px -4px 0 var(--main-color), 12px -4px 0 var(--main-color), 16px -4px 0 var(--main-color), 20px -4px 0 var(--main-color), 24px -4px 0 var(--main-color), 28px -4px 0 var(--main-color), 32px -4px 0 var(--main-color), 4px 0px 0 var(--main-color), 8px 0px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 24px 0px 0 var(--main-color), 28px 0px 0 var(--main-color), 24px 4px 0 var(--main-color); }
+
+        /* 장애물 구조 */
+        .obstacle { position: absolute; background: transparent; z-index: 4; }
+        .cactus { bottom: 2px; width: 4px; height: 4px; box-shadow: 8px -24px 0 var(--main-color), 8px -20px 0 var(--main-color), 0px -16px 0 var(--main-color), 8px -16px 0 var(--main-color), 16px -16px 0 var(--main-color), 0px -12px 0 var(--main-color), 8px -12px 0 var(--main-color), 16px -12px 0 var(--main-color), 0px -8px 0 var(--main-color), 8px -8px 0 var(--main-color), 8px -4px 0 var(--main-color), 8px 0px 0 var(--main-color); }
+        .ptera { width: 4px; height: 4px; box-shadow: 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 8px 4px 0 var(--main-color), 12px 4px 0 var(--main-color), 16px 4px 0 var(--main-color), 20px 4px 0 var(--main-color), 24px 4px 0 var(--main-color), 0px 8px 0 var(--main-color), 4px 8px 0 var(--main-color), 8px 8px 0 var(--main-color), 12px 8px 0 var(--main-color), 16px 8px 0 var(--main-color), 20px 8px 0 var(--main-color), 8px 12px 0 var(--main-color), 12px 12px 0 var(--main-color), 16px 12px 0 var(--main-color); }
+
+        /* 오버레이 */
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--main-color); font-size: 16px; font-weight: bold; background-color: var(--bg-color); z-index: 20; }
+        .msg-gameover { display: none; }
+        .gameover-text { font-size: 24px; letter-spacing: 5px; margin-bottom: 10px; }
+        .restart-text { font-size: 14px; color: var(--sub-color); }
     </style>
 </head>
 <body>
 
 <div id="game">
     <div id="clouds"></div>
-
     <div id="score-area">
         <span id="hi-score">HI 00000</span>
         <span id="score">00000</span>
     </div>
-
-    <div id="dino"></div>
-
+    <div id="dino" class="stand"></div>
     <div id="obstacles"></div>
-
     <div class="overlay msg-start" id="msg-start">
-        <p>Space / ↑ 키로 시작</p>
+        <p>Space / ↑: 점프, ↓: 숙이기</p>
+        <p style="font-size: 12px; margin-top: 5px;">(시작하려면 Space / ↑)</p>
     </div>
-
     <div class="overlay msg-gameover" id="msg-gameover">
         <p class="gameover-text">GAME OVER</p>
         <p class="restart-text">Space / ↑ 키로 재시작</p>
@@ -180,7 +74,6 @@
 </div>
 
 <script>
-    // 요소 가져오기
     const body = document.body;
     const dino = document.getElementById('dino');
     const scoreDisplay = document.getElementById('score');
@@ -190,100 +83,109 @@
     const msgStart = document.getElementById('msg-start');
     const msgGameover = document.getElementById('msg-gameover');
 
-    // 게임 상태 변수
     let isPlaying = false;
     let score = 0;
     let hiScore = 0;
     let scoreInterval;
     let gameLoopInterval;
-    let isNight = false; // [수정 3] 현재 밤 모드인지 여부
+    let isNight = false;
     
-    // 공룡 물리 변수
     let isJumping = false;
+    let isDucking = false; 
     let dinoY = 0;
     let jumpVelocity = 0;
     const gravity = 0.6; 
 
-    // 장애물 및 배경 변수
     let obstacles = [];
     let clouds = [];
     let obstacleSpeed = 4; 
-    const cloudSpeed = 1; // [수정 2] 구름 이동 속도
+    const cloudSpeed = 1; 
     let spawnTimer = 0;
     let cloudSpawnTimer = 0;
 
+    // [수정사항] 다리 달리기 애니메이션용 타이머 변수
+    let legTimer = 0;
+    let currentLegFrame = 'a'; // 'a' 또는 'b'
+
     // 키보드 입력 처리
     window.addEventListener('keydown', function(e) {
+        if (!isPlaying) {
+            if (e.code === 'Space' || e.code === 'ArrowUp') startGame();
+            return;
+        }
+
         if (e.code === 'Space' || e.code === 'ArrowUp') {
             e.preventDefault(); 
-            
-            if (!isPlaying) {
-                if (msgGameover.style.display === 'flex') {
-                    startGame(); // 게임오버 후 재시작
-                } else if (msgStart.style.display !== 'none') {
-                    startGame(); // 처음 시작
-                }
-            } else if (!isJumping) {
+            if (!isJumping && !isDucking) { 
                 isJumping = true;
-                jumpVelocity = 10; // 점프 힘 약간 증가
+                jumpVelocity = 10;
+            }
+        } else if (e.code === 'ArrowDown') {
+            e.preventDefault();
+            if (!isJumping && !isDucking) { 
+                isDucking = true;
             }
         }
     });
 
-    // 게임 시작 함수
+    window.addEventListener('keyup', function(e) {
+        if (e.code === 'ArrowDown') {
+            e.preventDefault();
+            if (isDucking) {
+                isDucking = false;
+            }
+        }
+    });
+
     function startGame() {
         isPlaying = true;
         score = 0;
         dinoY = 0;
         isJumping = false;
+        isDucking = false; 
         jumpVelocity = 0;
         obstacles = [];
         clouds = [];
         spawnTimer = 0;
         cloudSpawnTimer = 0;
-        isNight = false; // [수정 3] 시작은 항상 낮
+        legTimer = 0;
+        isNight = false;
+        obstacleSpeed = 4; 
 
-        // UI 초기화
         obstaclesContainer.innerHTML = '';
         cloudsContainer.innerHTML = '';
-        body.classList.remove('night-mode'); // [수정 4] 낮 모드로 초기화
+        body.classList.remove('night-mode');
         msgStart.style.display = 'none';
         msgGameover.style.display = 'none';
         scoreDisplay.innerText = '00000';
 
-        // [수정 3] 0.1초(100ms)마다 점수 1씩 증가
+        // 0.05초마다 점수 증가
         clearInterval(scoreInterval);
         scoreInterval = setInterval(() => {
             if (!isPlaying) return;
             score++;
             scoreDisplay.innerText = String(score).padStart(5, '0');
 
-            // [수정 3, 4] 600의 배수마다 낮밤 전환
             if (score > 0 && score % 600 === 0) {
                 toggleNightMode();
             }
-        }, 100);
+        }, 50);
 
-        // 메인 게임 루프 (초당 60프레임)
         clearInterval(gameLoopInterval);
         gameLoopInterval = setInterval(updateGame, 1000 / 60);
     }
 
-    // [수정 4] 낮밤 색상 반전 함수
     function toggleNightMode() {
         isNight = !isNight;
-        if (isNight) {
-            body.classList.add('night-mode');
-        } else {
-            body.classList.remove('night-mode');
-        }
+        if (isNight) body.classList.add('night-mode');
+        else body.classList.remove('night-mode');
+        obstacleSpeed += 2; // 난이도 업
     }
 
-    // 매 프레임 업데이트 함수
     function updateGame() {
         if (!isPlaying) return;
 
-        // --- 공룡 점수 물리 연산 ---
+        // --- 공룡 점프 및 물리 연산 ---
         if (isJumping) {
             dinoY += jumpVelocity;
             jumpVelocity -= gravity; 
@@ -294,108 +196,115 @@
                 jumpVelocity = 0;
             }
         }
-        // 기본 위치 bottom: 2px 에 Y값을 더함
         dino.style.bottom = (2 + dinoY) + 'px';
 
-        // --- [수정 2] 배경 구름 생성 및 이동 관리 ---
+        // --- [수정사항] 달리기 다리 애니메이션 연산 (60프레임 루프 내부) ---
+        legTimer++;
+        if (legTimer > 6) { // 숫자가 낮을수록 다리를 더 빨리 움직입니다 (6프레임=0.1초 마다 전환)
+            currentLegFrame = (currentLegFrame === 'a') ? 'b' : 'a';
+            legTimer = 0;
+        }
+
+        // 상태별 클래스 교체 실시간 업데이트
+        dino.className = ''; // 클래스 전체 리셋
+        if (isJumping) {
+            dino.classList.add('stand'); // 공중에 떠 있을 때는 다리를 모으고 정지
+        } else if (isDucking) {
+            dino.classList.add(currentLegFrame === 'a' ? 'duck-a' : 'duck-b'); // 숙여서 달리기
+        } else {
+            dino.classList.add(currentLegFrame === 'a' ? 'run-a' : 'run-b'); // 서서 달리기
+        }
+
+        // 배경 구름 제어
         cloudSpawnTimer++;
-        if (cloudSpawnTimer > Math.random() * 100 + 150) { // 구름 생성 주기
+        if (cloudSpawnTimer > Math.random() * 100 + 150) {
             createCloud();
             cloudSpawnTimer = 0;
         }
-
         for (let i = clouds.length - 1; i >= 0; i--) {
             let cloud = clouds[i];
-            cloud.x -= cloudSpeed; // 왼쪽으로 이동
+            cloud.x -= cloudSpeed;
             cloud.el.style.left = cloud.x + 'px';
-
-            if (cloud.x < -40) { // 화면 왼쪽 나가면 제거
-                cloud.el.remove();
-                clouds.splice(i, 1);
-            }
+            if (cloud.x < -40) { cloud.el.remove(); clouds.splice(i, 1); }
         }
 
-        // --- 장애물(선인장) 생성 관리 ---
+        // 장애물 생성 간격 계산
         spawnTimer++;
-        if (spawnTimer > Math.random() * 40 + 80) { 
-            createObstacle();
+        const minSpawnInterval = (40 * 2) / obstacleSpeed * 60;
+        const maxSpawnInterval = (40 * 5) / obstacleSpeed * 60;
+        const spawnInterval = Math.random() * (maxSpawnInterval - minSpawnInterval) + minSpawnInterval;
+
+        if (spawnTimer > spawnInterval) { 
+            if (isNight && Math.random() > 0.5) {
+                createPtera();
+            } else {
+                const numCactus = Math.random() > 0.5 ? 1 : 2;
+                createCactus(numCactus);
+            }
             spawnTimer = 0;
         }
 
-        // --- 장애물 이동 및 충돌 체크 ---
+        // 장애물 이동 및 충돌 체크
         for (let i = obstacles.length - 1; i >= 0; i--) {
             let obs = obstacles[i];
             obs.x -= obstacleSpeed;
             obs.el.style.left = obs.x + 'px';
 
-            if (obs.x < -20) {
-                obs.el.remove();
-                obstacles.splice(i, 1);
-                continue;
-            }
+            if (obs.x < -40) { obs.el.remove(); obstacles.splice(i, 1); continue; }
 
-            // --- 정교화된 충돌 감지 (Hitbox) ---
-            // 브라키오는 목이 길어서 앞부분 판정을 줄여야 점프 시 안걸림
-            // 실제 도트 위치 기준으로 판정 박스 설정 (픽셀 단위 계산)
-            let dinoLeft = 40 + 12;  // 몸통 시작 부분
-            let dinoRight = 40 + 32; // 목 시작 전 몸통 끝
+            // 충돌 감지 박스 (숙이기 유무 반영)
+            let dinoLeft = 40 + (isDucking ? 4 : 12);
+            let dinoRight = 40 + (isDucking ? 40 : 32);
             let dinoBottom = dinoY;
-            let dinoTop = dinoY + 16; // 몸통 높이까지만 판정 (목/머리는 제외)
+            let dinoTop = dinoY + (isDucking ? 8 : 16);
 
-            // 선인장 판정 박스
-            let obsLeft = obs.x + 2;
-            let obsRight = obs.x + 18;
-            let obsTop = 24; // 선인장 상단 높이
+            let obsLeft = obs.x + obs.hitbox.left;
+            let obsRight = obs.x + obs.hitbox.right;
+            let obsBottom = obs.hitbox.bottom;
+            let obsTop = obs.hitbox.top;
 
-            // AABB 충돌 알고리즘
-            if (obsLeft < dinoRight && 
-                obsRight > dinoLeft && 
-                dinoBottom < obsTop) {
+            if (obsLeft < dinoRight && obsRight > dinoLeft && dinoBottom < obsTop && dinoTop > obsBottom) {
                 endGame();
             }
         }
     }
 
-    // [수정 2] 구름 엘리먼트 생성
     function createCloud() {
         const cloudEl = document.createElement('div');
         cloudEl.classList.add('cloud');
         cloudEl.style.left = '600px';
-        // 구름 높이 랜덤 지정 (위쪽 20px ~ 80px 사이)
         cloudEl.style.top = (Math.random() * 60 + 20) + 'px'; 
         cloudsContainer.appendChild(cloudEl);
-        
-        clouds.push({
-            el: cloudEl,
-            x: 600
-        });
+        clouds.push({ el: cloudEl, x: 600 });
     }
 
-    // 선인장 엘리먼트 생성
-    function createObstacle() {
+    function createCactus(num) {
+        for (let i = 0; i < num; i++) {
+            const obsEl = document.createElement('div');
+            obsEl.classList.add('obstacle', 'cactus');
+            const startX = 600 + (i * 20); 
+            obsEl.style.left = startX + 'px';
+            obstaclesContainer.appendChild(obsEl);
+            obstacles.push({ el: obsEl, x: startX, hitbox: { left: 2, right: 18, bottom: 0, top: 24 } });
+        }
+    }
+
+    function createPtera() {
         const obsEl = document.createElement('div');
-        obsEl.classList.add('obstacle');
+        obsEl.classList.add('obstacle', 'ptera');
         obsEl.style.left = '600px';
+        const bottomPos = 30; 
+        obsEl.style.bottom = bottomPos + 'px';
         obstaclesContainer.appendChild(obsEl);
-        
-        obstacles.push({
-            el: obsEl,
-            x: 600
-        });
+        obstacles.push({ el: obsEl, x: 600, hitbox: { left: 4, right: 20, bottom: bottomPos, top: bottomPos + 12 } });
     }
 
-    // 게임 오버 처리
     function endGame() {
         isPlaying = false;
         clearInterval(scoreInterval);
         clearInterval(gameLoopInterval);
-        
-        // 최고 점수 갱신
-        if (score > hiScore) {
-            hiScore = score;
-            hiScoreDisplay.innerText = 'HI ' + String(hiScore).padStart(5, '0');
-        }
-
+        dino.className = 'stand'; // 게임오버 시에는 기본 서 있는 자세로 고정
+        if (score > hiScore) { hiScore = score; hiScoreDisplay.innerText = 'HI ' + String(hiScore).padStart(5, '0'); }
         msgGameover.style.display = 'flex';
     }
 </script>
