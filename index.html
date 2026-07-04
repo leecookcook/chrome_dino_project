@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>크롬 스타일 브라키오 게임</title>
+    <title>크롬 스타일 브라키오 게임 - 데이&나이트</title>
     <style>
         /* 기본 흑백 및 픽셀 스타일 세팅 */
         * {
@@ -13,23 +13,39 @@
             font-family: 'Courier New', Courier, monospace;
         }
 
+        /* [수정 4] 밤/낮 모드를 위한 CSS 변수 정의 */
+        :root {
+            --bg-color: #f7f7f7;   /* 낮 배경 */
+            --main-color: #535353; /* 낮 오브젝트 색 (진한 회색) */
+            --sub-color: #747474;  /* 낮 보조 색 */
+        }
+
+        /* 밤 모드 클래스 */
+        body.night-mode {
+            --bg-color: #202124;   /* 밤 배경 (다크 그레이) */
+            --main-color: #e8eaed; /* 밤 오브젝트 색 (연한 회색) */
+            --sub-color: #9aa0a6;  /* 밤 보조 색 */
+        }
+
         body {
-            background-color: #f7f7f7;
+            background-color: var(--bg-color);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             overflow: hidden;
             user-select: none;
+            transition: background-color 0.3s ease; /* 낮밤 전환 부드럽게 */
         }
 
         #game {
             position: relative;
             width: 600px;
             height: 150px;
-            background-color: #f7f7f7;
+            background-color: var(--bg-color);
             overflow: hidden;
-            border-bottom: 2px solid #535353; /* 지면선 */
+            border-bottom: 2px solid var(--main-color); /* 지면선 */
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         /* 점수 영역 */
@@ -37,58 +53,71 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            color: #535353;
+            color: var(--main-color);
             font-size: 18px;
             font-weight: bold;
             z-index: 10;
         }
         #hi-score {
             margin-right: 15px;
-            color: #747474;
+            color: var(--sub-color);
         }
 
-        /* 픽셀 브라키오사우르스 (CSS 그림자로 픽셀 표현) */
-        #dino {
+        /* [수정 2] 픽셀 구름 디자인 및 애니메이션 */
+        .cloud {
             position: absolute;
-            left: 40px;
-            bottom: 0px; /* 지면 바로 위 */
             width: 4px;
             height: 4px;
             background: transparent;
-            /* 브라키오사우르스 픽셀 아트 데이터 (흑백) */
+            /* 픽셀 구름 아트 */
+            box-shadow:
+                12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color),
+                4px 4px 0 var(--main-color), 8px 4px 0 var(--main-color), 12px 4px 0 var(--main-color), 16px 4px 0 var(--main-color), 20px 4px 0 var(--main-color), 24px 4px 0 var(--main-color), 28px 4px 0 var(--main-color),
+                0px 8px 0 var(--main-color), 4px 8px 0 var(--main-color), 8px 8px 0 var(--main-color), 12px 8px 0 var(--main-color), 16px 8px 0 var(--main-color), 20px 8px 0 var(--main-color), 24px 8px 0 var(--main-color),
+                8px 12px 0 var(--main-color), 12px 12px 0 var(--main-color);
+            opacity: 0.6; /* 약간 투명하게 */
+        }
+
+        /* [수정 1] 브라키오사우르스 위치 조정 (bottom: 2px) */
+        #dino {
+            position: absolute;
+            left: 40px;
+            bottom: 2px; /* 발이 바닥 선 위에 딱 붙도록 수정 */
+            width: 4px;
+            height: 4px;
+            background: transparent;
+            /* 브라키오사우르스 픽셀 아트 */
             box-shadow: 
-                /* 목과 머리 */
-                36px -32px 0 #535353, 40px -32px 0 #535353, 44px -32px 0 #535353,
-                36px -28px 0 #535353, 40px -28px 0 #535353,
-                36px -24px 0 #535353,
-                36px -20px 0 #535353,
-                32px -16px 0 #535353, 36px -16px 0 #535353,
-                28px -12px 0 #535353, 32px -12px 0 #535353,
-                /* 몸통 */
-                12px -8px 0 #535353, 16px -8px 0 #535353, 20px -8px 0 #535353, 24px -8px 0 #535353, 28px -8px 0 #535353,
-                8px -4px 0 #535353, 12px -4px 0 #535353, 16px -4px 0 #535353, 20px -4px 0 #535353, 24px -4px 0 #535353, 28px -4px 0 #535353,
-                4px 0px 0 #535353, 8px 0px 0 #535353, 12px 0px 0 #535353, 16px 0px 0 #535353, 20px 0px 0 #535353, 24px 0px 0 #535353,
-                /* 다리 */
-                8px 4px 0 #535353, 24px 4px 0 #535353;
+                36px -32px 0 var(--main-color), 40px -32px 0 var(--main-color), 44px -32px 0 var(--main-color),
+                36px -28px 0 var(--main-color), 40px -28px 0 var(--main-color),
+                36px -24px 0 var(--main-color),
+                36px -20px 0 var(--main-color),
+                32px -16px 0 var(--main-color), 36px -16px 0 var(--main-color),
+                28px -12px 0 var(--main-color), 32px -12px 0 var(--main-color),
+                12px -8px 0 var(--main-color), 16px -8px 0 var(--main-color), 20px -8px 0 var(--main-color), 24px -8px 0 var(--main-color), 28px -8px 0 var(--main-color),
+                8px -4px 0 var(--main-color), 12px -4px 0 var(--main-color), 16px -4px 0 var(--main-color), 20px -4px 0 var(--main-color), 24px -4px 0 var(--main-color), 28px -4px 0 var(--main-color),
+                4px 0px 0 var(--main-color), 8px 0px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 24px 0px 0 var(--main-color),
+                8px 4px 0 var(--main-color), 24px 4px 0 var(--main-color);
             transition: bottom 0s;
+            z-index: 5;
         }
 
         /* 장애물 (픽셀 선인장) */
         .obstacle {
             position: absolute;
-            bottom: 0px;
+            bottom: 2px; /* 선인장도 바닥 위에 위치 */
             width: 4px;
             height: 4px;
             background: transparent;
-            /* 선인장 픽셀 아트 데이터 (흑백) */
             box-shadow:
-                8px -24px 0 #535353,
-                8px -20px 0 #535353,
-                0px -16px 0 #535353, 8px -16px 0 #535353, 16px -16px 0 #535353,
-                0px -12px 0 #535353, 8px -12px 0 #535353, 16px -12px 0 #535353,
-                0px -8px 0 #535353, 8px -8px 0 #535353,
-                8px -4px 0 #535353,
-                8px 0px 0 #535353;
+                8px -24px 0 var(--main-color),
+                8px -20px 0 var(--main-color),
+                0px -16px 0 var(--main-color), 8px -16px 0 var(--main-color), 16px -16px 0 var(--main-color),
+                0px -12px 0 var(--main-color), 8px -12px 0 var(--main-color), 16px -12px 0 var(--main-color),
+                0px -8px 0 var(--main-color), 8px -8px 0 var(--main-color),
+                8px -4px 0 var(--main-color),
+                8px 0px 0 var(--main-color);
+            z-index: 4;
         }
 
         /* 안내 문구 오버레이 */
@@ -102,10 +131,12 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: #535353;
+            color: var(--main-color);
             font-size: 16px;
             font-weight: bold;
-            background-color: rgba(247, 247, 247, 0.8);
+            /* 배경색과 동일한 불투명 배경 */
+            background-color: var(--bg-color); 
+            z-index: 20;
         }
 
         .msg-gameover {
@@ -120,13 +151,15 @@
 
         .restart-text {
             font-size: 14px;
-            color: #747474;
+            color: var(--sub-color);
         }
     </style>
 </head>
 <body>
 
 <div id="game">
+    <div id="clouds"></div>
+
     <div id="score-area">
         <span id="hi-score">HI 00000</span>
         <span id="score">00000</span>
@@ -148,10 +181,12 @@
 
 <script>
     // 요소 가져오기
+    const body = document.body;
     const dino = document.getElementById('dino');
     const scoreDisplay = document.getElementById('score');
     const hiScoreDisplay = document.getElementById('hi-score');
     const obstaclesContainer = document.getElementById('obstacles');
+    const cloudsContainer = document.getElementById('clouds');
     const msgStart = document.getElementById('msg-start');
     const msgGameover = document.getElementById('msg-gameover');
 
@@ -161,30 +196,36 @@
     let hiScore = 0;
     let scoreInterval;
     let gameLoopInterval;
+    let isNight = false; // [수정 3] 현재 밤 모드인지 여부
     
-    // 공룡 점수 및 물리 변수
+    // 공룡 물리 변수
     let isJumping = false;
     let dinoY = 0;
     let jumpVelocity = 0;
-    const gravity = 0.6; // 중력 강도
+    const gravity = 0.6; 
 
-    // 장애물 변수
+    // 장애물 및 배경 변수
     let obstacles = [];
-    let obstacleSpeed = 4; // 선인장이 다가오는 현실적인 기본 속도
+    let clouds = [];
+    let obstacleSpeed = 4; 
+    const cloudSpeed = 1; // [수정 2] 구름 이동 속도
     let spawnTimer = 0;
+    let cloudSpawnTimer = 0;
 
     // 키보드 입력 처리
     window.addEventListener('keydown', function(e) {
         if (e.code === 'Space' || e.code === 'ArrowUp') {
-            e.preventDefault(); // 브라우저 스크롤 방지
+            e.preventDefault(); 
             
             if (!isPlaying) {
-                // 게임이 끝나있거나 시작 전이면 재시작
-                startGame();
+                if (msgGameover.style.display === 'flex') {
+                    startGame(); // 게임오버 후 재시작
+                } else if (msgStart.style.display !== 'none') {
+                    startGame(); // 처음 시작
+                }
             } else if (!isJumping) {
-                // 게임 중이고 점프 중이 아니면 점프 시동
                 isJumping = true;
-                jumpVelocity = 9.5; // 점프 높이/힘 조절
+                jumpVelocity = 10; // 점프 힘 약간 증가
             }
         }
     });
@@ -197,30 +238,55 @@
         isJumping = false;
         jumpVelocity = 0;
         obstacles = [];
-        obstaclesContainer.innerHTML = '';
-        
-        msgStart.style.display = 'none';
-        msgGameover.style.style = 'none';
-        msgGameover.style.display = 'none';
+        clouds = [];
+        spawnTimer = 0;
+        cloudSpawnTimer = 0;
+        isNight = false; // [수정 3] 시작은 항상 낮
 
-        // 1. 0.01초(10ms)마다 점수 1씩 증가시켰습니다.
+        // UI 초기화
+        obstaclesContainer.innerHTML = '';
+        cloudsContainer.innerHTML = '';
+        body.classList.remove('night-mode'); // [수정 4] 낮 모드로 초기화
+        msgStart.style.display = 'none';
+        msgGameover.style.display = 'none';
+        scoreDisplay.innerText = '00000';
+
+        // [수정 3] 0.1초(100ms)마다 점수 1씩 증가
         clearInterval(scoreInterval);
         scoreInterval = setInterval(() => {
+            if (!isPlaying) return;
             score++;
             scoreDisplay.innerText = String(score).padStart(5, '0');
-        }, 10);
 
-        // 2. 메인 게임 루프 (초당 60프레임 기준 환경)
+            // [수정 3, 4] 600의 배수마다 낮밤 전환
+            if (score > 0 && score % 600 === 0) {
+                toggleNightMode();
+            }
+        }, 100);
+
+        // 메인 게임 루프 (초당 60프레임)
         clearInterval(gameLoopInterval);
         gameLoopInterval = setInterval(updateGame, 1000 / 60);
     }
 
+    // [수정 4] 낮밤 색상 반전 함수
+    function toggleNightMode() {
+        isNight = !isNight;
+        if (isNight) {
+            body.classList.add('night-mode');
+        } else {
+            body.classList.remove('night-mode');
+        }
+    }
+
     // 매 프레임 업데이트 함수
     function updateGame() {
+        if (!isPlaying) return;
+
         // --- 공룡 점수 물리 연산 ---
         if (isJumping) {
             dinoY += jumpVelocity;
-            jumpVelocity -= gravity; // 중력 적용
+            jumpVelocity -= gravity; 
 
             if (dinoY <= 0) {
                 dinoY = 0;
@@ -228,11 +294,30 @@
                 jumpVelocity = 0;
             }
         }
-        dino.style.bottom = dinoY + 'px';
+        // 기본 위치 bottom: 2px 에 Y값을 더함
+        dino.style.bottom = (2 + dinoY) + 'px';
+
+        // --- [수정 2] 배경 구름 생성 및 이동 관리 ---
+        cloudSpawnTimer++;
+        if (cloudSpawnTimer > Math.random() * 100 + 150) { // 구름 생성 주기
+            createCloud();
+            cloudSpawnTimer = 0;
+        }
+
+        for (let i = clouds.length - 1; i >= 0; i--) {
+            let cloud = clouds[i];
+            cloud.x -= cloudSpeed; // 왼쪽으로 이동
+            cloud.el.style.left = cloud.x + 'px';
+
+            if (cloud.x < -40) { // 화면 왼쪽 나가면 제거
+                cloud.el.remove();
+                clouds.splice(i, 1);
+            }
+        }
 
         // --- 장애물(선인장) 생성 관리 ---
         spawnTimer++;
-        if (spawnTimer > Math.random() * 40 + 90) { // 생성 주기 랜덤화로 현실감 부여
+        if (spawnTimer > Math.random() * 40 + 80) { 
             createObstacle();
             spawnTimer = 0;
         }
@@ -243,27 +328,47 @@
             obs.x -= obstacleSpeed;
             obs.el.style.left = obs.x + 'px';
 
-            // 화면 왼쪽으로 나가면 제거
             if (obs.x < -20) {
                 obs.el.remove();
                 obstacles.splice(i, 1);
                 continue;
             }
 
-            // 히트박스 기반 충돌 감지 알고리즘 (픽셀 아트 크기 기준 계산)
-            // 브라키오사우르스 가로 영역 대략 40px ~ 88px 사이 분포
-            let dinoLeft = 40 + 4;
-            let dinoRight = 40 + 44; 
-            let dinoTop = dinoY + 36; // 머리 높이 고려
+            // --- 정교화된 충돌 감지 (Hitbox) ---
+            // 브라키오는 목이 길어서 앞부분 판정을 줄여야 점프 시 안걸림
+            // 실제 도트 위치 기준으로 판정 박스 설정 (픽셀 단위 계산)
+            let dinoLeft = 40 + 12;  // 몸통 시작 부분
+            let dinoRight = 40 + 32; // 목 시작 전 몸통 끝
+            let dinoBottom = dinoY;
+            let dinoTop = dinoY + 16; // 몸통 높이까지만 판정 (목/머리는 제외)
 
-            let obsLeft = obs.x;
-            let obsRight = obs.x + 20;
-            let obsTop = 24; // 선인장 높이
+            // 선인장 판정 박스
+            let obsLeft = obs.x + 2;
+            let obsRight = obs.x + 18;
+            let obsTop = 24; // 선인장 상단 높이
 
-            if (obsLeft < dinoRight && obsRight > dinoLeft && dinoY < obsTop) {
+            // AABB 충돌 알고리즘
+            if (obsLeft < dinoRight && 
+                obsRight > dinoLeft && 
+                dinoBottom < obsTop) {
                 endGame();
             }
         }
+    }
+
+    // [수정 2] 구름 엘리먼트 생성
+    function createCloud() {
+        const cloudEl = document.createElement('div');
+        cloudEl.classList.add('cloud');
+        cloudEl.style.left = '600px';
+        // 구름 높이 랜덤 지정 (위쪽 20px ~ 80px 사이)
+        cloudEl.style.top = (Math.random() * 60 + 20) + 'px'; 
+        cloudsContainer.appendChild(cloudEl);
+        
+        clouds.push({
+            el: cloudEl,
+            x: 600
+        });
     }
 
     // 선인장 엘리먼트 생성
