@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>크롬 스타일 브라키오 게임 - 다리 자연스럽게</title>
+    <title>크롬 스타일 브라키오 게임 - 다리 교차 완성본</title>
     <style>
         /* 기본 스타일 및 낮/밤 테마 */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
@@ -24,16 +24,19 @@
         /* 공룡 공통 베이스 */
         #dino { position: absolute; left: 40px; bottom: 2px; width: 4px; height: 4px; background: transparent; z-index: 5; }
 
-        /* [수정사항] 양 다리가 항상 있고 위지만 양옆으로 교차하는 달리기 픽셀 아트 */
+        /* --- [재수정] 양 다리가 무조건 보이고 양옆으로 위치만 바뀌는 픽셀 아트 --- */
+        /* 몸통 공통 탑 라인 제외, 맨 아래 다리 도트(8px, 12px, 20px, 24px) 조합 변경 */
         
-        /* 서서 달리기 프레임 A (왼발 앞, 오른발 뒤) */
+        /* 1. 서서 달리기 A : 다리가 넓게 벌어짐 (8px, 24px 지점 배치) */
         #dino.stand-a { box-shadow: 36px -32px 0 var(--main-color), 40px -32px 0 var(--main-color), 44px -32px 0 var(--main-color), 36px -28px 0 var(--main-color), 40px -28px 0 var(--main-color), 36px -24px 0 var(--main-color), 36px -20px 0 var(--main-color), 32px -16px 0 var(--main-color), 36px -16px 0 var(--main-color), 28px -12px 0 var(--main-color), 32px -12px 0 var(--main-color), 12px -8px 0 var(--main-color), 16px -8px 0 var(--main-color), 20px -8px 0 var(--main-color), 24px -8px 0 var(--main-color), 28px -8px 0 var(--main-color), 8px -4px 0 var(--main-color), 12px -4px 0 var(--main-color), 16px -4px 0 var(--main-color), 20px -4px 0 var(--main-color), 24px -4px 0 var(--main-color), 28px -4px 0 var(--main-color), 4px 0px 0 var(--main-color), 8px 0px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 24px 0px 0 var(--main-color), 8px 4px 0 var(--main-color), 24px 4px 0 var(--main-color); }
-        /* 서서 달리기 프레임 B (왼발 뒤, 오른발 앞 - 양 다리 좌표 수정) */
+        
+        /* 2. 서서 달리기 B : 다리가 좁게 교차됨 (12px, 20px 지점 배치) */
         #dino.stand-b { box-shadow: 36px -32px 0 var(--main-color), 40px -32px 0 var(--main-color), 44px -32px 0 var(--main-color), 36px -28px 0 var(--main-color), 40px -28px 0 var(--main-color), 36px -24px 0 var(--main-color), 36px -20px 0 var(--main-color), 32px -16px 0 var(--main-color), 36px -16px 0 var(--main-color), 28px -12px 0 var(--main-color), 32px -12px 0 var(--main-color), 12px -8px 0 var(--main-color), 16px -8px 0 var(--main-color), 20px -8px 0 var(--main-color), 24px -8px 0 var(--main-color), 28px -8px 0 var(--main-color), 8px -4px 0 var(--main-color), 12px -4px 0 var(--main-color), 16px -4px 0 var(--main-color), 20px -4px 0 var(--main-color), 24px -4px 0 var(--main-color), 28px -4px 0 var(--main-color), 4px 0px 0 var(--main-color), 8px 0px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 24px 0px 0 var(--main-color), 12px 4px 0 var(--main-color), 20px 4px 0 var(--main-color); }
 
-        /* 숙여서 달리기 프레임 A (왼발 앞, 오른발 뒤) */
+        /* 3. 숙여서 달리기 A : 숙인 채 다리가 넓게 벌어짐 (8px, 24px 지점 배치) */
         #dino.duck-a { box-shadow: 12px -8px 0 var(--main-color), 16px -8px 0 var(--main-color), 20px -8px 0 var(--main-color), 24px -8px 0 var(--main-color), 28px -8px 0 var(--main-color), 32px -8px 0 var(--main-color), 36px -8px 0 var(--main-color), 40px -8px 0 var(--main-color), 8px -4px 0 var(--main-color), 12px -4px 0 var(--main-color), 16px -4px 0 var(--main-color), 20px -4px 0 var(--main-color), 24px -4px 0 var(--main-color), 28px -4px 0 var(--main-color), 32px -4px 0 var(--main-color), 4px 0px 0 var(--main-color), 8px 0px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 24px 0px 0 var(--main-color), 28px 0px 0 var(--main-color), 8px 4px 0 var(--main-color), 24px 4px 0 var(--main-color); }
-        /* 숙여서 달리기 프레임 B (왼발 뒤, 오른발 앞 - 양 다리 좌표 수정) */
+        
+        /* 4. 숙여서 달리기 B : 숙인 채 다리가 좁게 교차됨 (12px, 20px 지점 배치) */
         #dino.duck-b { box-shadow: 12px -8px 0 var(--main-color), 16px -8px 0 var(--main-color), 20px -8px 0 var(--main-color), 24px -8px 0 var(--main-color), 28px -8px 0 var(--main-color), 32px -8px 0 var(--main-color), 36px -8px 0 var(--main-color), 40px -8px 0 var(--main-color), 8px -4px 0 var(--main-color), 12px -4px 0 var(--main-color), 16px -4px 0 var(--main-color), 20px -4px 0 var(--main-color), 24px -4px 0 var(--main-color), 28px -4px 0 var(--main-color), 32px -4px 0 var(--main-color), 4px 0px 0 var(--main-color), 8px 0px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 24px 0px 0 var(--main-color), 28px 0px 0 var(--main-color), 12px 4px 0 var(--main-color), 20px 4px 0 var(--main-color); }
 
         /* 장애물 구조 */
@@ -97,10 +100,10 @@
     const cloudSpeed = 1; 
     let nextSpawnDistance = 300; 
 
+    // 애니메이션 프레임 제어 타이머
     let animTimer = 0;
     let currentFrame = 'a';
 
-    // 키보드 이벤트 핸들러
     window.addEventListener('keydown', function(e) {
         if (!isPlaying) {
             if (e.code === 'Space' || e.code === 'ArrowUp') {
@@ -142,7 +145,7 @@
         clouds = [];
         isNight = false;
         obstacleSpeed = 4; 
-        nextSpawnDistance = 200; 
+        nextSpawnDistance = 250; 
 
         obstaclesContainer.innerHTML = '';
         cloudsContainer.innerHTML = '';
@@ -151,7 +154,7 @@
         msgGameover.style.display = 'none';
         scoreDisplay.innerText = '00000';
 
-        // 0.05초에 1씩 증가하는 점수 타이머
+        // 1. 점수 타이머 (0.05초마다 1씩 상승)
         clearInterval(scoreInterval);
         scoreInterval = setInterval(() => {
             if (!isPlaying) return;
@@ -167,6 +170,7 @@
         gameLoopInterval = setInterval(updateGame, 1000 / 60);
     }
 
+    // 3. 밤낮 교체 시 속도 2씩 누적 증가
     function toggleNightMode() {
         isNight = !isNight;
         if (isNight) body.classList.add('night-mode');
@@ -177,7 +181,7 @@
     function updateGame() {
         if (!isPlaying) return;
 
-        // 공룡 점프 연산
+        // 점프 연산
         if (isJumping) {
             dinoY += jumpVelocity;
             jumpVelocity -= gravity; 
@@ -190,24 +194,24 @@
         }
         dino.style.bottom = (2 + dinoY) + 'px';
 
-        // 애니메이션 프레임 제어
+        // --- 5. 실시간 다리 교차 애니메이션 렌더링 동기화 ---
         animTimer++;
-        if (animTimer > 6) { 
+        if (animTimer > 8) { // 다리 변환 주기를 8프레임으로 조정하여 더욱 명확하게 보이게 함
             currentFrame = (currentFrame === 'a') ? 'b' : 'a';
             animTimer = 0;
         }
 
-        // 상태별 클래스 부여
+        // 강제로 클래스를 초기화하고 실시간 변동 적용
         dino.className = ''; 
         if (isJumping) {
-            dino.classList.add('stand-a'); 
+            dino.classList.add('stand-a'); // 공중에선 고정
         } else if (isDucking) {
-            dino.classList.add(currentFrame === 'a' ? 'duck-a' : 'duck-b'); 
+            dino.classList.add(currentFrame === 'a' ? 'duck-a' : 'duck-b'); // 4. 숙여서 다리 교차 질주
         } else {
-            dino.classList.add(currentFrame === 'a' ? 'stand-a' : 'stand-b'); 
+            dino.classList.add(currentFrame === 'a' ? 'stand-a' : 'stand-b'); // 서서 다리 교차 질주
         }
 
-        // 구름 이동
+        // 구름 제어
         if (Math.random() < 0.005) createCloud();
         for (let i = clouds.length - 1; i >= 0; i--) {
             let cloud = clouds[i];
@@ -216,7 +220,7 @@
             if (cloud.x < -40) { cloud.el.remove(); clouds.splice(i, 1); }
         }
 
-        // 장애물 스폰 알고리즘 (2~5배 무작위 간격)
+        // --- 2. 장애물 간격을 공룡 크기의 3~6배로 조정 알고리즘 ---
         let lastObstacleX = 0;
         if (obstacles.length > 0) {
             lastObstacleX = obstacles[obstacles.length - 1].x;
@@ -226,17 +230,20 @@
             if (isNight && Math.random() > 0.5) {
                 createPtera();
             } else {
-                const count = Math.random() > 0.5 ? 1 : 2;
+                const count = Math.random() > 0.5 ? 1 : 2; // 1~2개 무작위 생성
                 createCactus(count);
             }
 
+            // 간격 범위 변경 계산 (공룡 폭 44px 기준)
             const dinoWidth = 44;
-            const minDistance = dinoWidth * 2; 
-            const maxDistance = dinoWidth * 5; 
-            nextSpawnDistance = Math.random() * (maxDistance - minDistance) + minDistance + (obstacleSpeed * 10);
+            const minDistance = dinoWidth * 3; // 3배 = 132px
+            const maxDistance = dinoWidth * 6; // 6배 = 264px
+            
+            // 난이도 상승에 따른 속도 보정 값을 더해 무작위 간격 세팅
+            nextSpawnDistance = Math.random() * (maxDistance - minDistance) + minDistance + (obstacleSpeed * 8);
         }
 
-        // 장애물 이동 및 충돌 처리
+        // 장애물 이동 및 충돌
         for (let i = obstacles.length - 1; i >= 0; i--) {
             let obs = obstacles[i];
             obs.x -= obstacleSpeed;
@@ -244,6 +251,7 @@
 
             if (obs.x < -60) { obs.el.remove(); obstacles.splice(i, 1); continue; }
 
+            // 히트박스 연산
             let dinoLeft = 40 + (isDucking ? 4 : 12);
             let dinoRight = 40 + (isDucking ? 40 : 32);
             let dinoBottom = dinoY;
