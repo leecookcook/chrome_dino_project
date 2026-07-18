@@ -139,7 +139,7 @@
     let dinoHistory = []; 
     let trex = null;      
     let bullets = [];
-    let cactusList = []; // 선인장 추적용
+    let cactusList = [];
 
     // 별 생성
     function createStars() {
@@ -159,6 +159,7 @@
 
     // 무기 발사 함수
     function shootGun() {
+        if (!isPlaying) return;
         const bullet = document.createElement('div');
         bullet.className = 'bullet';
         let bX = 40 + 44;
@@ -234,10 +235,35 @@
         obstacleSpeed = 4; 
         nextSpawnDistance = 250; 
 
-        meteors.forEach(m => m.el.remove()); meteors = [];
-        babyDinos.forEach(b => b.el.remove()); babyDinos = [];
-        bullets.forEach(b => b.el.remove()); bullets = [];
-        if(trex) { trex.el.remove(); trex = null; dino.classList.remove('armed'); }
+        // ✅ 메테오 완전 정리 (매우 중요)
+        for (let i = meteors.length - 1; i >= 0; i--) {
+            if (meteors[i] && meteors[i].el) {
+                meteors[i].el.remove();
+            }
+        }
+        meteors = [];
+
+        // 다른 요소들도 정리
+        for (let i = babyDinos.length - 1; i >= 0; i--) {
+            if (babyDinos[i] && babyDinos[i].el) {
+                babyDinos[i].el.remove();
+            }
+        }
+        babyDinos = [];
+
+        for (let i = bullets.length - 1; i >= 0; i--) {
+            if (bullets[i] && bullets[i].el) {
+                bullets[i].el.remove();
+            }
+        }
+        bullets = [];
+
+        if(trex && trex.el) { 
+            trex.el.remove(); 
+            trex = null; 
+            dino.classList.remove('armed'); 
+        }
+        
         dinoHistory = [];
 
         dino.style.transition = 'none';
@@ -258,23 +284,27 @@
         scoreDisplay.innerText = '00000';
 
         clearInterval(scoreInterval);
-        scoreInterval = setInterval(() => {
-            if (!isPlaying) return;
-            score++;
-            scoreDisplay.innerText = String(score).padStart(5, '0');
-
-            if (score > 0 && score % 600 === 0) toggleNightMode();
-            
-            if (score > 0 && score % 200 === 0 && Math.random() <= 0.5) createMeteor();
-            
-            if (score > 0 && score % 600 === 0) createBabyDino();
-            
-            if (score > 0 && score % 1000 === 0 && !trex) createTrex();
-            
-        }, 50);
-
         clearInterval(gameLoopInterval);
-        gameLoopInterval = setInterval(updateGame, 1000 / 60);
+
+        // 약간의 지연을 주어 게임 시작 전 모든 상태가 정리되도록 함
+        setTimeout(() => {
+            scoreInterval = setInterval(() => {
+                if (!isPlaying) return;
+                score++;
+                scoreDisplay.innerText = String(score).padStart(5, '0');
+
+                if (score > 0 && score % 600 === 0) toggleNightMode();
+                
+                if (score > 0 && score % 200 === 0 && Math.random() <= 0.5) createMeteor();
+                
+                if (score > 0 && score % 600 === 0) createBabyDino();
+                
+                if (score > 0 && score % 1000 === 0 && !trex) createTrex();
+                
+            }, 50);
+
+            gameLoopInterval = setInterval(updateGame, 1000 / 60);
+        }, 100);
     }
 
     function toggleNightMode() {
@@ -332,7 +362,7 @@
             }
         });
 
-        // --- 메테오 이동 (크기 2배 고려) ---
+        // --- 메테오 이동 및 충돌 ---
         for (let i = meteors.length - 1; i >= 0; i--) {
             let m = meteors[i];
             m.x -= obstacleSpeed * 1.5;
@@ -340,14 +370,24 @@
             m.el.style.left = m.x + 'px';
             m.el.style.top = m.y + 'px';
 
-            let dLeft = 40 + (isDucking ? 4 : 12), dRight = 40 + (isDucking ? 40 : 32);
-            let dBot = dinoY, dTop = dinoY + (isDucking ? 8 : 16);
-            let mBot = 150 - m.y - 16, mTop = 150 - m.y;
-            
-            if (m.x < dRight && m.x + 16 > dLeft && mBot < dTop && mTop > dBot) {
-                if (isPlaying) endGame();
+            // 화면 밖으로 나가면 삭제 (충돌 체크 전)
+            if (m.y > 150 || m.x < -40) { 
+                m.el.remove(); 
+                meteors.splice(i, 1); 
+                continue;
             }
-            if (m.y > 150 || m.x < -40) { m.el.remove(); meteors.splice(i, 1); }
+
+            // 이제 충돌 체크
+            if (isPlaying) {
+                let dLeft = 40 + (isDucking ? 4 : 12), dRight = 40 + (isDucking ? 40 : 32);
+                let dBot = dinoY, dTop = dinoY + (isDucking ? 8 : 16);
+                let mBot = 150 - m.y - 16, mTop = 150 - m.y;
+                
+                if (m.x < dRight && m.x + 16 > dLeft && mBot < dTop && mTop > dBot) {
+                    endGame();
+                    return; // 즉시 반환
+                }
+            }
         }
 
         // --- 총알 이동 및 티라노 타격 판정 ---
@@ -371,22 +411,21 @@
                     trex.el.remove();
                     trex = null;
                     dino.classList.remove('armed');
-                    score += 200;
-                    
-                    // 보스 사망 시 선인장 다시 생성
+                    score += 200; 
                     restoreCactus();
                 }
             }
         }
 
         // --- 보스 티라노 업데이트 ---
-        if (trex) {
+        if (trex && isPlaying) {
             trex.x -= obstacleSpeed * 0.4; 
             trex.el.style.left = trex.x + 'px';
             trex.el.className = 'trex ' + (currentFrame === 'a' ? 'stand-a' : 'stand-b'); 
             
             if (trex.x < 40 + 32) {
-                if (isPlaying) endGame();
+                endGame();
+                return;
             }
         }
 
@@ -425,22 +464,26 @@
                 continue; 
             }
 
-            let dinoLeft = 40 + (isDucking ? 4 : 12), dinoRight = 40 + (isDucking ? 40 : 32);
-            let dinoBottom = dinoY, dinoTop = dinoY + (isDucking ? 8 : 16);
-            let obsLeft = obs.x + obs.hitbox.left, obsRight = obs.x + obs.hitbox.right;
-            let obsBottom = obs.hitbox.bottom, obsTop = obs.hitbox.top;
+            if (isPlaying) {
+                let dinoLeft = 40 + (isDucking ? 4 : 12), dinoRight = 40 + (isDucking ? 40 : 32);
+                let dinoBottom = dinoY, dinoTop = dinoY + (isDucking ? 8 : 16);
+                let obsLeft = obs.x + obs.hitbox.left, obsRight = obs.x + obs.hitbox.right;
+                let obsBottom = obs.hitbox.bottom, obsTop = obs.hitbox.top;
 
-            if (obsLeft < dinoRight && obsRight > dinoLeft && dinoBottom < obsTop && dinoTop > obsBottom) {
-                if (isPlaying) endGame();
+                if (obsLeft < dinoRight && obsRight > dinoLeft && dinoBottom < obsTop && dinoTop > obsBottom) {
+                    endGame();
+                    return;
+                }
             }
         }
     }
 
     function createMeteor() {
+        if (!isPlaying) return;
         const el = document.createElement('div');
         el.className = 'meteor';
         let startX = 600 + Math.random() * 100;
-        let startY = -50; // 더 높은 위치에서 생성
+        let startY = -50;
         el.style.left = startX + 'px';
         el.style.top = startY + 'px';
         gameContainer.appendChild(el);
@@ -448,6 +491,7 @@
     }
 
     function createBabyDino() {
+        if (!isPlaying) return;
         const el = document.createElement('div');
         el.className = 'baby-dino stand-a';
         const randomHue = Math.floor(Math.random() * 360);
@@ -457,17 +501,19 @@
     }
 
     function createTrex() {
+        if (!isPlaying) return;
         dino.classList.add('armed');
         isDucking = false;
 
-        // 모든 선인장 삭제
         cactusList.forEach(cactus => {
-            cactus.el.remove();
+            if (cactus && cactus.el) {
+                cactus.el.remove();
+            }
         });
         cactusList = [];
-        obstacles = obstacles.filter(obs => obs.el.className !== 'obstacle cactus');
+        obstacles = obstacles.filter(obs => !cactusList.includes(obs));
 
-        trex = { x: -50, hp: 10, el: document.createElement('div') }; // 왼쪽 끝에서 생성
+        trex = { x: -50, hp: 10, el: document.createElement('div') };
         trex.el.className = 'trex stand-a';
         trex.el.style.left = '-50px';
         trex.el.style.bottom = '2px';
@@ -482,12 +528,12 @@
     }
 
     function restoreCactus() {
-        // 보스 사망 후 선인장을 다시 생성하기 시작
         cactusList = [];
         obstacles = obstacles.filter(obs => !cactusList.includes(obs));
     }
 
     function createCloud() {
+        if (!isPlaying) return;
         const cloudEl = document.createElement('div');
         cloudEl.classList.add('cloud');
         cloudEl.style.left = '600px';
@@ -497,6 +543,7 @@
     }
 
     function createCactus(count) {
+        if (!isPlaying) return;
         for (let i = 0; i < count; i++) {
             const obsEl = document.createElement('div');
             obsEl.classList.add('obstacle', 'cactus');
@@ -510,16 +557,18 @@
     }
 
     function createPtera() {
+        if (!isPlaying) return;
         const obsEl = document.createElement('div');
         obsEl.classList.add('obstacle', 'ptera');
         obsEl.style.left = '600px';
-        const flyHeight = 35; // 높이 조정
+        const flyHeight = 35;
         obsEl.style.bottom = flyHeight + 'px';
         obstaclesContainer.appendChild(obsEl);
         obstacles.push({ el: obsEl, x: 600, hitbox: { left: -10, right: 48, bottom: flyHeight - 6, top: flyHeight + 14 } });
     }
 
     function endGame() {
+        if (!isPlaying) return; // ✅ 이미 게임이 끝났다면 다시 실행 안함
         isPlaying = false;
         clearInterval(scoreInterval);
         clearInterval(gameLoopInterval);
@@ -536,7 +585,7 @@
         dino.style.transform = 'scale(8) rotate(720deg)'; 
 
         setTimeout(() => {
-            if (isPlaying === false && score > hiScore) { 
+            if (!isPlaying && score > hiScore) { 
                 hiScore = score; 
                 hiScoreDisplay.innerText = 'HI ' + String(hiScore).padStart(5, '0'); 
             }
