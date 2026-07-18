@@ -14,14 +14,23 @@
         body { background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; user-select: none; transition: background-color 0.3s ease; -webkit-touch-callout: none; }
         #game { position: relative; width: 600px; height: 150px; background-color: var(--bg-color); overflow: hidden; border-bottom: 2px solid var(--main-color); transition: background-color 0.3s ease, border-color 0.3s ease; touch-action: none; }
 
+        /* 지진 효과 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0px); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+        #game.shake { animation: shake 0.3s ease-in-out; }
+
         /* 점수 영역 */
         #score-area { position: absolute; top: 10px; right: 10px; color: var(--main-color); font-size: 18px; font-weight: bold; z-index: 10; }
         #hi-score { margin-right: 15px; color: var(--sub-color); }
 
-        /* 별과 달 */
+        /* 별과 달 (픽셀 스타일) */
         .stars-container { position: absolute; width: 100%; height: 100%; z-index: 0; display: none; }
-        .star { position: absolute; width: 2px; height: 2px; background: white; border-radius: 50%; opacity: 0.8; }
-        .moon { position: absolute; width: 30px; height: 30px; background: #fffacd; border-radius: 50%; top: 15px; right: 50px; box-shadow: inset -8px -4px 0 #0a0e27; z-index: 1; }
+        .star { position: absolute; width: 4px; height: 4px; background: transparent; z-index: 1; }
+        .moon { position: absolute; width: 4px; height: 4px; background: transparent; z-index: 1; }
 
         body.night-mode .stars-container { display: block; }
 
@@ -49,18 +58,18 @@
         .obstacle { position: absolute; background: transparent; z-index: 4; }
         .cactus { bottom: 2px; width: 4px; height: 4px; box-shadow: 8px -24px 0 var(--main-color), 8px -20px 0 var(--main-color), 0px -16px 0 var(--main-color), 8px -16px 0 var(--main-color), 16px -16px 0 var(--main-color), 0px -12px 0 var(--main-color), 8px -12px 0 var(--main-color), 16px -12px 0 var(--main-color), 0px -8px 0 var(--main-color), 8px -8px 0 var(--main-color), 8px -4px 0 var(--main-color), 8px 0px 0 var(--main-color); }
         
-        /* 프테라노돈 (개선된 디자인, 더 큼) */
+        /* 프테라노돈 (개선된 디자인, 더 크고 정확함) */
         .ptera { width: 4px; height: 4px; box-shadow: 
-            /* 머리 및 부리 */ 20px -14px 0 var(--main-color), 24px -14px 0 var(--main-color), 28px -14px 0 var(--main-color), 32px -14px 0 var(--main-color),
-            /* 머리 */ 16px -10px 0 var(--main-color), 20px -10px 0 var(--main-color), 24px -10px 0 var(--main-color), 28px -10px 0 var(--main-color),
-            /* 목 */ 16px -6px 0 var(--main-color), 20px -6px 0 var(--main-color),
-            /* 몸통 */ 8px -10px 0 var(--main-color), 12px -10px 0 var(--main-color), 8px -6px 0 var(--main-color), 12px -6px 0 var(--main-color), 4px -6px 0 var(--main-color), 8px -2px 0 var(--main-color), 12px -2px 0 var(--main-color), 4px -2px 0 var(--main-color),
-            /* 날개 좌측 */ 0px -8px 0 var(--main-color), 0px -4px 0 var(--main-color), 0px 0px 0 var(--main-color),
-            /* 날개 우측 */ 32px -8px 0 var(--main-color), 36px -8px 0 var(--main-color), 32px -4px 0 var(--main-color), 36px -4px 0 var(--main-color), 32px 0px 0 var(--main-color), 36px 0px 0 var(--main-color),
-            /* 꼬리 */ 4px -10px 0 var(--main-color), 0px -10px 0 var(--main-color); }
+            /* 긴 부리 */ 28px -20px 0 var(--main-color), 32px -20px 0 var(--main-color), 36px -20px 0 var(--main-color), 40px -20px 0 var(--main-color),
+            /* 머리 */ 24px -16px 0 var(--main-color), 28px -16px 0 var(--main-color), 32px -16px 0 var(--main-color), 36px -16px 0 var(--main-color),
+            /* 목 */ 20px -12px 0 var(--main-color), 24px -12px 0 var(--main-color), 28px -12px 0 var(--main-color),
+            /* 몸 */ 16px -8px 0 var(--main-color), 20px -8px 0 var(--main-color), 24px -8px 0 var(--main-color), 28px -8px 0 var(--main-color),
+            /* 왼쪽 날개 */ 4px -12px 0 var(--main-color), 4px -8px 0 var(--main-color), 8px -8px 0 var(--main-color), 4px -4px 0 var(--main-color), 8px -4px 0 var(--main-color), 12px -4px 0 var(--main-color),
+            /* 오른쪽 날개 */ 32px -12px 0 var(--main-color), 36px -8px 0 var(--main-color), 40px -8px 0 var(--main-color), 36px -4px 0 var(--main-color), 40px -4px 0 var(--main-color), 44px -4px 0 var(--main-color),
+            /* 다리 */ 20px -4px 0 var(--main-color), 20px 0px 0 var(--main-color), 24px -4px 0 var(--main-color), 24px 0px 0 var(--main-color); }
 
-        /* 메테오 - 크기 증가 */
-        .meteor { position: absolute; width: 16px; height: 16px; background: #ff4500; box-shadow: 12px -12px 0 #ff8c00, 24px -24px 0 #ffd700; z-index: 6; border-radius: 2px; }
+        /* 메테오 - 더 잘 보이는 색상 */
+        .meteor { position: absolute; width: 16px; height: 16px; background: #1E90FF; box-shadow: 8px -8px 0 #00BFFF, 16px -16px 0 #87CEEB; z-index: 6; border-radius: 2px; }
 
         /* 다양한 아기 공룡 */
         .baby-dino { position: absolute; width: 4px; height: 4px; background: transparent; z-index: 4; transform: scale(0.6); transform-origin: bottom left; }
@@ -140,21 +149,69 @@
     let trex = null;      
     let bullets = [];
     let cactusList = [];
+    let lastMeteorScore = 0; // 100점마다 메테오 발사 추적
 
-    // 별 생성
+    // 별과 달 생성 (픽셀 스타일)
     function createStars() {
         starsContainer.innerHTML = '';
-        for (let i = 0; i < 15; i++) {
+        
+        // 별 생성 (랜덤)
+        for (let i = 0; i < 20; i++) {
             const star = document.createElement('div');
             star.className = 'star';
-            star.style.left = Math.random() * 600 + 'px';
-            star.style.top = Math.random() * 120 + 'px';
+            const randomX = Math.random() * 600;
+            const randomY = Math.random() * 100;
+            
+            // 별 픽셀 패턴 (십자 모양)
+            star.style.boxShadow = `
+                0px 0px 0px white, 2px 0px 0px white, -2px 0px 0px white,
+                0px 2px 0px white, 0px -2px 0px white
+            `;
+            star.style.left = randomX + 'px';
+            star.style.top = randomY + 'px';
+            star.style.animation = `float ${20 + Math.random() * 20}s linear infinite`;
+            star.dataset.originalX = randomX;
             starsContainer.appendChild(star);
         }
         
+        // 달 생성 (픽셀)
         const moon = document.createElement('div');
         moon.className = 'moon';
+        moon.style.boxShadow = `
+            0px 0px 0px #fffacd, 4px 0px 0px #fffacd, -4px 0px 0px #fffacd,
+            0px 4px 0px #fffacd, 0px -4px 0px #fffacd,
+            4px 4px 0px #fffacd, -4px 4px 0px #fffacd,
+            4px -4px 0px #fffacd, -4px -4px 0px #fffacd
+        `;
+        moon.style.left = '500px';
+        moon.style.top = '20px';
+        moon.style.animation = 'moonFloat 600s linear infinite'; // 아침이 될 때까지 천천히 이동
         starsContainer.appendChild(moon);
+
+        // CSS 애니메이션 추가
+        if (!document.getElementById('star-animations')) {
+            const style = document.createElement('style');
+            style.id = 'star-animations';
+            style.textContent = `
+                @keyframes float {
+                    0% { transform: translateX(0px); }
+                    100% { transform: translateX(-700px); }
+                }
+                @keyframes moonFloat {
+                    0% { left: 500px; }
+                    100% { left: -100px; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+
+    // 지진 효과
+    function triggerEarthquake() {
+        gameContainer.classList.remove('shake');
+        void gameContainer.offsetWidth; // 강제 리플로우
+        gameContainer.classList.add('shake');
+        setTimeout(() => gameContainer.classList.remove('shake'), 300);
     }
 
     // 무기 발사 함수
@@ -233,9 +290,10 @@
         cactusList = [];
         isNight = false;
         obstacleSpeed = 4; 
-        nextSpawnDistance = 250; 
+        nextSpawnDistance = 250;
+        lastMeteorScore = 0;
 
-        // ✅ 메테오 완전 정리 (매우 중요)
+        // 메테오 완전 정리
         for (let i = meteors.length - 1; i >= 0; i--) {
             if (meteors[i] && meteors[i].el) {
                 meteors[i].el.remove();
@@ -286,7 +344,6 @@
         clearInterval(scoreInterval);
         clearInterval(gameLoopInterval);
 
-        // 약간의 지연을 주어 게임 시작 전 모든 상태가 정리되도록 함
         setTimeout(() => {
             scoreInterval = setInterval(() => {
                 if (!isPlaying) return;
@@ -300,6 +357,12 @@
                 if (score > 0 && score % 600 === 0) createBabyDino();
                 
                 if (score > 0 && score % 1000 === 0 && !trex) createTrex();
+
+                // 100점마다 메테오 발사
+                if (score > 0 && Math.floor(score / 100) > lastMeteorScore) {
+                    lastMeteorScore = Math.floor(score / 100);
+                    createMeteorTowardDino();
+                }
                 
             }, 50);
 
@@ -365,27 +428,30 @@
         // --- 메테오 이동 및 충돌 ---
         for (let i = meteors.length - 1; i >= 0; i--) {
             let m = meteors[i];
-            m.x -= obstacleSpeed * 1.5;
-            m.y += obstacleSpeed * 1.5;
+            m.x += m.vx;
+            m.y += m.vy;
             m.el.style.left = m.x + 'px';
             m.el.style.top = m.y + 'px';
 
-            // 화면 밖으로 나가면 삭제 (충돌 체크 전)
-            if (m.y > 150 || m.x < -40) { 
+            // 화면 밖으로 나가면 삭제
+            if (m.y > 150 || m.x < -40 || m.x > 650) { 
                 m.el.remove(); 
                 meteors.splice(i, 1); 
                 continue;
             }
 
-            // 이제 충돌 체크
+            // 메테오 충돌 체크 - 맞으면 죽지 않고 점수만 증가
             if (isPlaying) {
                 let dLeft = 40 + (isDucking ? 4 : 12), dRight = 40 + (isDucking ? 40 : 32);
                 let dBot = dinoY, dTop = dinoY + (isDucking ? 8 : 16);
                 let mBot = 150 - m.y - 16, mTop = 150 - m.y;
                 
                 if (m.x < dRight && m.x + 16 > dLeft && mBot < dTop && mTop > dBot) {
-                    endGame();
-                    return; // 즉시 반환
+                    // 메테오 제거 및 점수 증가
+                    m.el.remove(); 
+                    meteors.splice(i, 1);
+                    score += 10; // 메테오 명중 시 10점
+                    scoreDisplay.innerText = String(score).padStart(5, '0');
                 }
             }
         }
@@ -487,7 +553,35 @@
         el.style.left = startX + 'px';
         el.style.top = startY + 'px';
         gameContainer.appendChild(el);
-        meteors.push({ el: el, x: startX, y: startY });
+        meteors.push({ el: el, x: startX, y: startY, vx: -obstacleSpeed * 1.5, vy: obstacleSpeed * 1.5 });
+    }
+
+    // 100점마다 브라키오 방향으로 메테오 발사
+    function createMeteorTowardDino() {
+        if (!isPlaying) return;
+        const el = document.createElement('div');
+        el.className = 'meteor';
+        let startX = 600 + Math.random() * 100;
+        let startY = -50;
+        el.style.left = startX + 'px';
+        el.style.top = startY + 'px';
+        gameContainer.appendChild(el);
+        
+        // 브라키오 방향으로 각도 계산
+        const dinoX = 40 + 22;
+        const dinoY = 2 + 8;
+        const dx = dinoX - startX;
+        const dy = dinoY - startY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const speed = obstacleSpeed * 2;
+        
+        const vx = (dx / dist) * speed;
+        const vy = (dy / dist) * speed;
+        
+        meteors.push({ el: el, x: startX, y: startY, vx: vx, vy: vy });
+        
+        // 지진 효과
+        triggerEarthquake();
     }
 
     function createBabyDino() {
@@ -513,9 +607,10 @@
         cactusList = [];
         obstacles = obstacles.filter(obs => !cactusList.includes(obs));
 
-        trex = { x: -50, hp: 10, el: document.createElement('div') };
+        // 왼쪽 끝(600)에서 생성
+        trex = { x: 600, hp: 10, el: document.createElement('div') };
         trex.el.className = 'trex stand-a';
-        trex.el.style.left = '-50px';
+        trex.el.style.left = '600px';
         trex.el.style.bottom = '2px';
 
         const hpText = document.createElement('div');
@@ -561,14 +656,14 @@
         const obsEl = document.createElement('div');
         obsEl.classList.add('obstacle', 'ptera');
         obsEl.style.left = '600px';
-        const flyHeight = 35;
+        const flyHeight = 30; // 더 낮은 높이 (숙여야 피할 수 있도록)
         obsEl.style.bottom = flyHeight + 'px';
         obstaclesContainer.appendChild(obsEl);
-        obstacles.push({ el: obsEl, x: 600, hitbox: { left: -10, right: 48, bottom: flyHeight - 6, top: flyHeight + 14 } });
+        obstacles.push({ el: obsEl, x: 600, hitbox: { left: -10, right: 50, bottom: flyHeight - 6, top: flyHeight + 20 } });
     }
 
     function endGame() {
-        if (!isPlaying) return; // ✅ 이미 게임이 끝났다면 다시 실행 안함
+        if (!isPlaying) return;
         isPlaying = false;
         clearInterval(scoreInterval);
         clearInterval(gameLoopInterval);
