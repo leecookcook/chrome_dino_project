@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>크롬 스타일 브라키오 게임 - 풀버전</title>
+    <title>크롬 스타일 브라키오 게임 - 최종 액션 버전</title>
     <style>
         /* 기본 스타일 및 낮/밤 테마 */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
@@ -24,11 +24,15 @@
         /* 공룡 공통 베이스 */
         #dino { position: absolute; left: 40px; bottom: 2px; width: 4px; height: 4px; background: transparent; z-index: 5; }
 
+        /* 브라키오 총 (보스전 한정) */
+        .gun { display: none; position: absolute; width: 14px; height: 6px; background: var(--main-color); bottom: 12px; left: 32px; border-radius: 0 3px 3px 0; z-index: 6; }
+        .armed .gun { display: block; }
+        .bullet { position: absolute; width: 8px; height: 4px; background: #ffaa00; border-radius: 2px; z-index: 6; box-shadow: 0 0 4px #ff0000; }
+
         /* 서서 달리기 A (외곽 벌림) */
         .stand-a { box-shadow: 36px -32px 0 var(--main-color), 40px -32px 0 var(--main-color), 44px -32px 0 var(--main-color), 36px -28px 0 var(--main-color), 40px -28px 0 var(--main-color), 36px -24px 0 var(--main-color), 36px -20px 0 var(--main-color), 32px -16px 0 var(--main-color), 36px -16px 0 var(--main-color), 28px -12px 0 var(--main-color), 32px -12px 0 var(--main-color), 12px -8px 0 var(--main-color), 16px -8px 0 var(--main-color), 20px -8px 0 var(--main-color), 24px -8px 0 var(--main-color), 28px -8px 0 var(--main-color), 8px -4px 0 var(--main-color), 12px -4px 0 var(--main-color), 16px -4px 0 var(--main-color), 20px -4px 0 var(--main-color), 24px -4px 0 var(--main-color), 28px -4px 0 var(--main-color), 4px 0px 0 var(--main-color), 8px 0px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 24px 0px 0 var(--main-color), 8px 4px 0 var(--main-color), 24px 4px 0 var(--main-color); }
         /* 서서 달리기 B (안쪽 모음) */
         .stand-b { box-shadow: 36px -32px 0 var(--main-color), 40px -32px 0 var(--main-color), 44px -32px 0 var(--main-color), 36px -28px 0 var(--main-color), 40px -28px 0 var(--main-color), 36px -24px 0 var(--main-color), 36px -20px 0 var(--main-color), 32px -16px 0 var(--main-color), 36px -16px 0 var(--main-color), 28px -12px 0 var(--main-color), 32px -12px 0 var(--main-color), 12px -8px 0 var(--main-color), 16px -8px 0 var(--main-color), 20px -8px 0 var(--main-color), 24px -8px 0 var(--main-color), 28px -8px 0 var(--main-color), 8px -4px 0 var(--main-color), 12px -4px 0 var(--main-color), 16px -4px 0 var(--main-color), 20px -4px 0 var(--main-color), 24px -4px 0 var(--main-color), 28px -4px 0 var(--main-color), 4px 0px 0 var(--main-color), 8px 0px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 24px 0px 0 var(--main-color), 12px 4px 0 var(--main-color), 20px 4px 0 var(--main-color); }
-
         /* 숙여서 달리기 A (외곽 벌림) */
         .duck-a { box-shadow: 12px -8px 0 var(--main-color), 16px -8px 0 var(--main-color), 20px -8px 0 var(--main-color), 24px -8px 0 var(--main-color), 28px -8px 0 var(--main-color), 32px -8px 0 var(--main-color), 36px -8px 0 var(--main-color), 40px -8px 0 var(--main-color), 8px -4px 0 var(--main-color), 12px -4px 0 var(--main-color), 16px -4px 0 var(--main-color), 20px -4px 0 var(--main-color), 24px -4px 0 var(--main-color), 28px -4px 0 var(--main-color), 32px -4px 0 var(--main-color), 4px 0px 0 var(--main-color), 8px 0px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 24px 0px 0 var(--main-color), 28px 0px 0 var(--main-color), 8px 4px 0 var(--main-color), 24px 4px 0 var(--main-color); }
         /* 숙여서 달리기 B (안쪽 모음) */
@@ -37,17 +41,19 @@
         /* 장애물 구조 */
         .obstacle { position: absolute; background: transparent; z-index: 4; }
         .cactus { bottom: 2px; width: 4px; height: 4px; box-shadow: 8px -24px 0 var(--main-color), 8px -20px 0 var(--main-color), 0px -16px 0 var(--main-color), 8px -16px 0 var(--main-color), 16px -16px 0 var(--main-color), 0px -12px 0 var(--main-color), 8px -12px 0 var(--main-color), 16px -12px 0 var(--main-color), 0px -8px 0 var(--main-color), 8px -8px 0 var(--main-color), 8px -4px 0 var(--main-color), 8px 0px 0 var(--main-color); }
-        .ptera { width: 4px; height: 4px; box-shadow: 4px 0px 0 var(--main-color), 8px 0px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 0px 4px 0 var(--main-color), 4px 4px 0 var(--main-color), 8px 4px 0 var(--main-color), 12px 4px 0 var(--main-color), 16px 4px 0 var(--main-color), 20px 4px 0 var(--main-color), 24px 4px 0 var(--main-color), 4px 8px 0 var(--main-color), 8px 8px 0 var(--main-color), 12px 8px 0 var(--main-color), 12px 12px 0 var(--main-color), 12px 16px 0 var(--main-color); }
+        
+        /* 익룡(Ptera) - 새롭게 다듬어진 디자인 */
+        .ptera { width: 4px; height: 4px; box-shadow: 16px -12px 0 var(--main-color), 12px -8px 0 var(--main-color), 16px -8px 0 var(--main-color), 20px -8px 0 var(--main-color), 0px -4px 0 var(--main-color), 4px -4px 0 var(--main-color), 8px -4px 0 var(--main-color), 12px -4px 0 var(--main-color), 16px -4px 0 var(--main-color), 20px -4px 0 var(--main-color), 24px -4px 0 var(--main-color), 28px -4px 0 var(--main-color), 12px 0px 0 var(--main-color), 16px 0px 0 var(--main-color), 20px 0px 0 var(--main-color), 16px 4px 0 var(--main-color); }
 
-        /* 1. 메테오 */
-        .meteor { position: absolute; width: 4px; height: 4px; background: #ff4500; box-shadow: 4px -4px 0 #ff8c00, 8px -8px 0 #ffd700; z-index: 6; }
+        /* 1. 메테오 - 크기 증가 및 스폰 확률 증가 */
+        .meteor { position: absolute; width: 8px; height: 8px; background: #ff4500; box-shadow: 8px -8px 0 #ff8c00, 16px -16px 0 #ffd700; z-index: 6; }
 
-        /* 3. 아기 공룡 */
+        /* 3. 다양한 아기 공룡 (자바스크립트에서 hue-rotate 필터로 색상 변경) */
         .baby-dino { position: absolute; width: 4px; height: 4px; background: transparent; z-index: 4; transform: scale(0.6); transform-origin: bottom left; }
 
         /* 4. 보스 티라노 */
-        .trex { position: absolute; width: 4px; height: 4px; background: transparent; z-index: 15; transform: scale(1.6) scaleX(-1); transform-origin: bottom right; cursor: pointer; }
-        .trex-hp { position: absolute; top: -20px; left: -15px; color: red; font-size: 10px; font-weight: bold; transform: scaleX(-1); width: 60px; pointer-events: none; }
+        .trex { position: absolute; width: 4px; height: 4px; background: transparent; z-index: 15; transform: scale(1.6) scaleX(-1); transform-origin: bottom right; }
+        .trex-hp { position: absolute; top: -25px; left: -15px; color: red; font-size: 10px; font-weight: bold; transform: scaleX(-1); width: 60px; pointer-events: none; }
 
         /* 안내 문구 오버레이 */
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--main-color); font-size: 16px; font-weight: bold; background-color: var(--bg-color); z-index: 20; text-align: center; padding: 10px; }
@@ -64,11 +70,13 @@
         <span id="hi-score">HI 00000</span>
         <span id="score">00000</span>
     </div>
-    <div id="dino" class="stand-a"></div>
+    <div id="dino" class="stand-a">
+        <div class="gun"></div>
+    </div>
     <div id="obstacles"></div>
     <div class="overlay msg-start" id="msg-start">
-        <p>📱 왼쪽(숙이기) / 오른쪽(점프) / 티라노(터치로 공격)</p>
-        <p style="font-size: 12px; margin-top: 5px; color: #747474;">⌨️ PC: ↑(점프) / ↓(숙이기) / 티라노(클릭)</p>
+        <p>📱 왼쪽(숙이기) / 오른쪽(점프 맟 사격)</p>
+        <p style="font-size: 12px; margin-top: 5px; color: #747474;">⌨️ PC: ↑(점프 및 사격) / ↓(숙이기)</p>
         <p style="font-size: 13px; margin-top: 10px; color: var(--main-color); background: rgba(0,0,0,0.05); padding: 5px 10px; border-radius: 4px;">[ 화면을 터치하면 시작합니다 ]</p>
     </div>
     <div class="overlay msg-gameover" id="msg-gameover">
@@ -110,26 +118,44 @@
     let animTimer = 0;
     let currentFrame = 'a';
 
-    // 신규 추가 변수들
     let meteors = [];
     let babyDinos = [];
-    let dinoHistory = []; // 아기 공룡이 따라오게 하기 위한 궤적 저장소
-    let trex = null;      // 보스 티라노 객체
+    let dinoHistory = []; 
+    let trex = null;      
+    let bullets = []; // 총알 배열
+
+    // 무기 발사 함수 (티라노 보스전 전용)
+    function shootGun() {
+        const bullet = document.createElement('div');
+        bullet.className = 'bullet';
+        let bX = 40 + 44; // 브라키오 앞부분
+        let bY = dinoY + 14; 
+        bullet.style.left = bX + 'px';
+        bullet.style.bottom = bY + 'px';
+        gameContainer.appendChild(bullet);
+        bullets.push({ el: bullet, x: bX, y: bY });
+    }
 
     // 모바일 터치
     gameContainer.addEventListener('touchstart', function(e) {
         if (!isPlaying && msgStart.style.display !== 'none') { e.preventDefault(); startGame(); return; }
         if (!isPlaying && msgGameover.style.display !== 'none') { e.preventDefault(); startGame(); return; }
 
-        if(isPlaying && !trexHitCheck(e)) {
+        if(isPlaying) {
             e.preventDefault();
             const touchX = e.touches[0].clientX - gameContainer.getBoundingClientRect().left;
             const gameWidth = gameContainer.clientWidth;
 
             if (touchX > gameWidth / 2) {
-                if (!isJumping && !isDucking) { isJumping = true; jumpVelocity = 10; }
+                // 오른쪽 화면 터치: 보스전이면 총 발사, 아니면 점프
+                if (trex) {
+                    shootGun();
+                } else if (!isJumping && !isDucking) { 
+                    isJumping = true; jumpVelocity = 10; 
+                }
             } else {
-                if (!isJumping) { isDucking = true; }
+                // 왼쪽 화면 터치: 고개 숙이기
+                if (!isJumping && !trex) { isDucking = true; } 
             }
         }
     }, { passive: false });
@@ -147,10 +173,14 @@
 
         if (e.code === 'Space' || e.code === 'ArrowUp') {
             e.preventDefault(); 
-            if (!isJumping && !isDucking) { isJumping = true; jumpVelocity = 10; }
+            if (trex) {
+                shootGun();
+            } else if (!isJumping && !isDucking) { 
+                isJumping = true; jumpVelocity = 10; 
+            }
         } else if (e.code === 'ArrowDown') {
             e.preventDefault();
-            if (!isJumping) { isDucking = true; }
+            if (!isJumping && !trex) { isDucking = true; } // 보스전 시 숙이기 방지
         }
     });
 
@@ -158,18 +188,6 @@
         if (e.code === 'ArrowDown') { e.preventDefault(); isDucking = false; }
     });
 
-    // 보스 피격 확인용 헬퍼 함수
-    function trexHitCheck(e) {
-        if(!trex || !isPlaying) return false;
-        let touchX = (e.touches) ? e.touches[0].clientX : e.clientX;
-        let touchY = (e.touches) ? e.touches[0].clientY : e.clientY;
-        let rect = trex.el.getBoundingClientRect();
-        // 터치 영역이 티라노 범위 안에 있으면
-        if(touchX >= rect.left - 20 && touchX <= rect.right + 20 && touchY >= rect.top - 20 && touchY <= rect.bottom + 20) {
-            return false; // 티라노 터치 이벤트가 잡도록 위임
-        }
-        return false;
-    }
 
     function startGame() {
         isPlaying = true;
@@ -184,19 +202,21 @@
         obstacleSpeed = 4; 
         nextSpawnDistance = 250; 
 
-        // 모든 신규 오브젝트 초기화
         meteors.forEach(m => m.el.remove()); meteors = [];
         babyDinos.forEach(b => b.el.remove()); babyDinos = [];
-        if(trex) { trex.el.remove(); trex = null; }
+        bullets.forEach(b => b.el.remove()); bullets = [];
+        if(trex) { trex.el.remove(); trex = null; dino.classList.remove('armed'); }
         dinoHistory = [];
 
-        // 사망 애니메이션 리셋 (줌인, 날아감 복구)
+        // 사망 애니메이션 리셋 (정중앙 줌인 복구)
         dino.style.transition = 'none';
         dino.style.transform = 'none';
         dino.style.left = '40px';
         dino.style.bottom = '2px';
+        dino.style.top = 'auto'; // 덮어씌워진 top 초기화
         dino.style.zIndex = '5';
         gameContainer.style.overflow = 'hidden';
+        dino.classList.remove('armed');
 
         obstaclesContainer.innerHTML = '';
         cloudsContainer.innerHTML = '';
@@ -213,13 +233,13 @@
 
             if (score > 0 && score % 600 === 0) toggleNightMode();
             
-            // 1. 메테오 스폰 (200점 마다 30% 확률)
-            if (score > 0 && score % 200 === 0 && Math.random() <= 0.3) createMeteor();
+            // 1. 메테오 스폰 (200점 마다 50% 확률로 상승)
+            if (score > 0 && score % 200 === 0 && Math.random() <= 0.5) createMeteor();
             
-            // 3. 아기 공룡 부화 (600점 마다)
+            // 3. 다양한 색상의 아기 공룡 부화 (600점 마다)
             if (score > 0 && score % 600 === 0) createBabyDino();
             
-            // 4. 보스 티라노 등장 (1000점 마다)
+            // 4. 보스 티라노 등장 및 총 장착 (1000점 마다)
             if (score > 0 && score % 1000 === 0 && !trex) createTrex();
             
         }, 50);
@@ -257,27 +277,29 @@
             animTimer = 0;
         }
 
-        dino.className = ''; 
+        dino.className = (trex ? 'armed ' : ''); 
         if (isJumping) dino.classList.add('stand-a'); 
         else if (isDucking) dino.classList.add(currentFrame === 'a' ? 'duck-a' : 'duck-b'); 
         else dino.classList.add(currentFrame === 'a' ? 'stand-a' : 'stand-b'); 
 
-        // --- 신규: 아기 공룡 따라가기 ---
+        // --- 아기 공룡 따라가기 ---
         dinoHistory.unshift({ y: dinoY, duck: isDucking, jump: isJumping, frame: currentFrame });
         if (dinoHistory.length > 300) dinoHistory.pop();
 
         babyDinos.forEach((baby, index) => {
-            let delay = (index + 1) * 15; // 각 마리당 15프레임 딜레이
+            let delay = (index + 1) * 15; 
             if (delay >= dinoHistory.length) delay = dinoHistory.length - 1;
             let state = dinoHistory[delay];
             if (state) {
                 baby.el.style.bottom = (2 + state.y) + 'px';
-                baby.el.style.left = (40 - (index + 1) * 22) + 'px'; // 메인 공룡 뒤로
+                baby.el.style.left = (40 - (index + 1) * 22) + 'px'; 
+                
+                // 기존 클래스 덮어쓰기 전에 색상 필터가 유지되도록 클래스만 교체
                 baby.el.className = 'baby-dino ' + (state.jump ? 'stand-a' : (state.duck ? (state.frame==='a'?'duck-a':'duck-b') : (state.frame==='a'?'stand-a':'stand-b')));
             }
         });
 
-        // --- 신규: 메테오 이동 ---
+        // --- 메테오 이동 (크기 2배 고려) ---
         for (let i = meteors.length - 1; i >= 0; i--) {
             let m = meteors[i];
             m.x -= obstacleSpeed * 1.5;
@@ -287,19 +309,47 @@
 
             let dLeft = 40 + (isDucking ? 4 : 12), dRight = 40 + (isDucking ? 40 : 32);
             let dBot = dinoY, dTop = dinoY + (isDucking ? 8 : 16);
-            let mBot = 150 - m.y - 8, mTop = 150 - m.y; // Y좌표계 변환 역계산
+            let mBot = 150 - m.y - 16, mTop = 150 - m.y; // 8x8 사이즈에 맞춰 충돌 범위 조정
             
-            if (m.x < dRight && m.x + 8 > dLeft && mBot < dTop && mTop > dBot) endGame();
-            if (m.y > 150 || m.x < -20) { m.el.remove(); meteors.splice(i, 1); }
+            if (m.x < dRight && m.x + 16 > dLeft && mBot < dTop && mTop > dBot) endGame();
+            if (m.y > 150 || m.x < -40) { m.el.remove(); meteors.splice(i, 1); }
         }
 
-        // --- 신규: 보스 티라노 업데이트 ---
-        if (trex) {
-            trex.x -= obstacleSpeed * 0.4; // 브라키오보다 천천히 접근
-            trex.el.style.left = trex.x + 'px';
-            trex.el.className = 'trex ' + (currentFrame === 'a' ? 'stand-a' : 'stand-b'); // 걷는 모션
+        // --- 총알 이동 및 티라노 타격 판정 ---
+        for (let i = bullets.length - 1; i >= 0; i--) {
+            let b = bullets[i];
+            b.x += 10;
+            b.el.style.left = b.x + 'px';
             
-            // 공룡과 충돌 판정
+            // 화면 밖으로 나가면 삭제
+            if (b.x > 600) { b.el.remove(); bullets.splice(i, 1); continue; }
+            
+            // 보스 타격
+            if (trex && b.x > trex.x && b.x < trex.x + 40) {
+                trex.hp--;
+                trex.hpEl.innerText = 'HP: ' + trex.hp;
+                
+                // 피격 이펙트
+                trex.el.style.filter = 'drop-shadow(0 0 5px red) brightness(2)';
+                setTimeout(() => { if(trex) trex.el.style.filter = 'none'; }, 100);
+
+                b.el.remove(); bullets.splice(i, 1);
+
+                if (trex.hp <= 0) {
+                    trex.el.remove();
+                    trex = null;
+                    dino.classList.remove('armed'); // 보스 처치 시 총 회수
+                    score += 200; 
+                }
+            }
+        }
+
+        // --- 보스 티라노 업데이트 ---
+        if (trex) {
+            trex.x -= obstacleSpeed * 0.4; 
+            trex.el.style.left = trex.x + 'px';
+            trex.el.className = 'trex ' + (currentFrame === 'a' ? 'stand-a' : 'stand-b'); 
+            
             if (trex.x < 40 + 32) endGame();
         }
 
@@ -312,7 +362,6 @@
             if (cloud.x < -40) { cloud.el.remove(); clouds.splice(i, 1); }
         }
 
-        // 티라노가 없을 때만 일반 장애물 스폰
         if (!trex) {
             let lastObstacleX = 0;
             if (obstacles.length > 0) lastObstacleX = obstacles[obstacles.length - 1].x;
@@ -344,28 +393,31 @@
         }
     }
 
-    // 신규: 메테오 생성
     function createMeteor() {
         const el = document.createElement('div');
         el.className = 'meteor';
         let startX = 600 + Math.random() * 100;
-        let startY = -20;
+        let startY = -30;
         el.style.left = startX + 'px';
         el.style.top = startY + 'px';
         gameContainer.appendChild(el);
         meteors.push({ el: el, x: startX, y: startY });
     }
 
-    // 신규: 아기 공룡 생성
     function createBabyDino() {
         const el = document.createElement('div');
         el.className = 'baby-dino stand-a';
+        // 아기 공룡 랜덤 색상 지정 (hue-rotate 필터 이용)
+        const randomHue = Math.floor(Math.random() * 360);
+        el.style.filter = `hue-rotate(${randomHue}deg)`;
         gameContainer.appendChild(el);
         babyDinos.push({ el: el });
     }
 
-    // 신규: 보스 티라노 생성 및 터치/클릭 로직
     function createTrex() {
+        dino.classList.add('armed'); // 총 장착
+        isDucking = false; // 보스전 중에는 숙이기 강제 해제
+
         trex = { x: 600, hp: 5, el: document.createElement('div') };
         trex.el.className = 'trex stand-a';
         trex.el.style.left = '600px';
@@ -374,33 +426,12 @@
         const hpText = document.createElement('div');
         hpText.className = 'trex-hp';
         hpText.innerText = 'HP: 5';
+        trex.hpEl = hpText; // 변수에 저장
         trex.el.appendChild(hpText);
-
-        const hitTrex = (e) => {
-            e.stopPropagation(); e.preventDefault();
-            if (!isPlaying || !trex) return;
-            
-            trex.hp--;
-            hpText.innerText = 'HP: ' + trex.hp;
-            
-            // 피격시 번쩍이는 효과
-            trex.el.style.filter = 'drop-shadow(0 0 5px red) brightness(2)';
-            setTimeout(() => { if(trex) trex.el.style.filter = 'none'; }, 100);
-
-            if (trex.hp <= 0) {
-                trex.el.remove();
-                trex = null;
-                score += 100; // 보너스 점수
-            }
-        };
-
-        trex.el.addEventListener('touchstart', hitTrex, { passive: false });
-        trex.el.addEventListener('mousedown', hitTrex);
 
         gameContainer.appendChild(trex.el);
     }
 
-    // 기존 요소 생성 함수들
     function createCloud() {
         const cloudEl = document.createElement('div');
         cloudEl.classList.add('cloud');
@@ -425,28 +456,31 @@
         const obsEl = document.createElement('div');
         obsEl.classList.add('obstacle', 'ptera');
         obsEl.style.left = '600px';
-        const flyHeight = 38; 
+        const flyHeight = 42; 
         obsEl.style.bottom = flyHeight + 'px';
         obstaclesContainer.appendChild(obsEl);
-        obstacles.push({ el: obsEl, x: 600, hitbox: { left: 0, right: 28, bottom: flyHeight, top: flyHeight + 16 } });
+        // 새로운 익룡 형태에 맞춰 타격 박스 조정
+        obstacles.push({ el: obsEl, x: 600, hitbox: { left: 0, right: 30, bottom: flyHeight - 4, top: flyHeight + 8 } });
     }
 
-    // 신규: 게임 오버 및 줌인 애니메이션
     function endGame() {
         isPlaying = false;
         clearInterval(scoreInterval);
         clearInterval(gameLoopInterval);
-        dino.className = 'stand-a'; 
+        dino.className = (trex ? 'armed stand-a' : 'stand-a'); 
 
-        // 2. 죽을때 브라키오가 하늘로 날아가면서 줌인 되는 애니메이션
-        gameContainer.style.overflow = 'visible'; // 밖으로 튀어나갈 수 있도록 처리
+        // 2. 화면 정중앙으로 날아가는 줌인 애니메이션
+        gameContainer.style.overflow = 'visible'; 
         dino.style.zIndex = '100';
         dino.style.transition = 'all 1.8s cubic-bezier(0.25, 1, 0.5, 1)';
-        dino.style.bottom = '250px'; // 하늘로 솟구침
-        dino.style.left = '280px';   // 화면 중앙으로 이동 (가로 600px 절반 근처)
-        dino.style.transform = 'scale(8) rotate(720deg)'; // 거대하게 줌인 되며 회전
+        
+        // 정중앙 위치 맞춤 연산 (너비 600px, 높이 150px 기준)
+        dino.style.left = 'calc(50% - 22px)'; 
+        dino.style.bottom = 'auto'; // 하단 기준을 해제하고
+        dino.style.top = 'calc(50% - 16px)'; // 화면 정중앙으로 지정
+        
+        dino.style.transform = 'scale(8) rotate(720deg)'; 
 
-        // 애니메이션이 끝난 후(약 1.8초 뒤) 게임 오버 UI 띄우기
         setTimeout(() => {
             if (score > hiScore) { hiScore = score; hiScoreDisplay.innerText = 'HI ' + String(hiScore).padStart(5, '0'); }
             msgGameover.style.display = 'flex';
